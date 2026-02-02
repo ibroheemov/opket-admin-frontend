@@ -40,7 +40,7 @@ export default function RidesPage() {
     const [data, setData] = useState<Ride[]>([]);
     const [total, setTotal] = useState(0);
 
-    // server-side table state
+    // server-side table statedd
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
