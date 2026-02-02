@@ -31,6 +31,11 @@ export default function AdminLayout() {
                             icon: <DashboardOutlined />,
                             label: <Link to="/app/dashboard">Dashboard</Link>,
                         },
+                        {
+                            key: "rides",
+                            icon: <DashboardOutlined />,
+                            label: <Link to="/app/rides">Buyurtmalar</Link>,
+                        },
                     ]}
                 />
             </Sider>

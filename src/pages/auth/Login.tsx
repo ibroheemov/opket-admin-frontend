@@ -16,8 +16,8 @@ export default function Login() {
             login(res.token);
 
             // Demo token:
-            const fakeToken = "demo-token";
-            login(fakeToken);
+            // const fakeToken = "demo-token";
+            // login(fakeToken);
 
             msg.success("Logged in!");
             navigate("/app/dashboard", { replace: true });
