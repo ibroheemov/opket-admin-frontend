@@ -32,6 +32,11 @@ export default function AdminLayout() {
                             label: <Link to="/app/dashboard">Dashboard</Link>,
                         },
                         {
+                            key: "drivers",
+                            icon: <DashboardOutlined />,
+                            label: <Link to="/app/drivers">Haydovchilar</Link>,
+                        },
+                        {
                             key: "rides",
                             icon: <DashboardOutlined />,
                             label: <Link to="/app/rides">Buyurtmalar</Link>,

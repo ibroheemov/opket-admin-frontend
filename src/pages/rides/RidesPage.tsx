@@ -10,12 +10,22 @@ import {
     Tag,
     Typography,
     message,
+    type TagProps,
 } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import dayjs from "dayjs";
 import { type Ride, RideAPI } from "../../api/endpoints";
 
 const { RangePicker } = DatePicker;
+
+export type RideStatus =
+    | "pending"
+    | "offered"
+    | "accepted"
+    | "arrived"
+    | "started"
+    | "completed"
+    | "cancelled";
 
 const STATUS_OPTIONS: Ride["status"][] = [
     "pending",
@@ -27,12 +37,22 @@ const STATUS_OPTIONS: Ride["status"][] = [
     "cancelled",
 ];
 
+export const rideStatusColor: Record<RideStatus, TagProps["color"]> = {
+    pending: "default",     // gray
+    offered: "blue",
+    accepted: "cyan",
+    arrived: "purple",
+    started: "gold",
+    completed: "green",
+    cancelled: "red",
+};
+
 const TYPE_OPTIONS: Ride["type"][] = ["app", "bot"];
 const RIDE_TYPE_OPTIONS: Ride["rideType"][] = ["standard", "premium", "comfort"];
 
-function statusTag(status: Ride["status"]) {
+function statusTag(status: RideStatus) {
     // keep it simple; no custom colors required
-    return <Tag>{status}</Tag>;
+    return <Tag color={rideStatusColor[status]}>{status}</Tag>;
 }
 
 export default function RidesPage() {
@@ -57,61 +77,37 @@ export default function RidesPage() {
     const columns: ColumnsType<Ride> = useMemo(
         () => [
             {
-                title: "ID",
-                dataIndex: "_id",
-                width: 220,
-                render: (v: string) => (
-                    <Typography.Text copyable={{ text: v }}>
-                        {v.slice(0, 10)}...
-                    </Typography.Text>
-                ),
-            },
-            {
                 title: "Status",
                 dataIndex: "status",
                 width: 140,
                 render: (v) => statusTag(v),
             },
             {
-                title: "Type",
+                title: "Ilova/Bot",
                 dataIndex: "type",
                 width: 100,
                 render: (v) => <Tag>{v}</Tag>,
             },
             {
-                title: "Ride Type",
+                title: "Telefon raqam",
+                dataIndex: "userPhoneNumber",
+                width: 120,
+                render: (v: number) => <Typography.Text>{v}</Typography.Text>,
+            },
+            {
+                title: "Buyurtma Turi",
                 dataIndex: "rideType",
                 width: 120,
                 render: (v) => <Tag>{v}</Tag>,
             },
             {
-                title: "Luggage",
-                dataIndex: "luggage",
-                width: 110,
-                render: (v: boolean) => (v ? <Tag>Yes</Tag> : <Tag>No</Tag>),
-            },
-            {
-                title: "User Chat ID",
-                dataIndex: "userChatId",
-                width: 140,
-            },
-            {
                 title: "Driver ID",
                 dataIndex: "driverId",
                 width: 160,
-                render: (v: string | null | undefined) => v ?? "-",
-            },
-            {
-                title: "Pickup",
-                dataIndex: ["pickup", "address"],
-                ellipsis: true,
-                render: (v: string | undefined) => v ?? "-",
-            },
-            {
-                title: "Dropoff",
-                dataIndex: ["dropoff", "address"],
-                ellipsis: true,
-                render: (v: string | undefined) => v ?? "-",
+                render: (_, r) => {
+                    const d = r.driverId; // now it's an object
+                    return d ? `${d.carModel} • ${d.carColor} • ${d.carNumber}` : "-";
+                },
             },
             {
                 title: "Fare",
@@ -301,8 +297,8 @@ export default function RidesPage() {
                         <Typography.Text strong>User Chat ID:</Typography.Text>
                         <Typography.Text>{selected.userChatId}</Typography.Text>
 
-                        <Typography.Text strong>Driver ID:</Typography.Text>
-                        <Typography.Text>{selected.driverId ?? "-"}</Typography.Text>
+                        {/* <Typography.Text strong>Driver ID:</Typography.Text>
+                        <Typography.Text>{selected.driverId ?? "-"}</Typography.Text> */}
 
                         <Typography.Text strong>Pickup:</Typography.Text>
                         <Typography.Text>{selected.pickup?.address ?? "-"}</Typography.Text>
