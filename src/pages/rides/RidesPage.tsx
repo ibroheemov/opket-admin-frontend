@@ -183,6 +183,15 @@ export default function RidesPage() {
         },
     };
 
+    const pickupMapsUrl = (ride: Ride) => {
+        const lat = ride.pickup?.lat;
+        const lon = ride.pickup?.lon;
+        if (typeof lat !== "number" || typeof lon !== "number") return null;
+
+        // query works well across platforms
+        return `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+    };
+
     return (
         <Space direction="vertical" size="middle" style={{ width: "100%" }}>
             <Typography.Title level={2} style={{ margin: 0 }}>
@@ -282,41 +291,92 @@ export default function RidesPage() {
                 title="Ride details"
                 open={!!selected}
                 onClose={() => setSelected(null)}
-                width={520}
+                width={720}
             >
                 {selected && (
-                    <Space direction="vertical" size="small" style={{ width: "100%" }}>
-                        <Typography.Text strong>ID:</Typography.Text>
-                        <Typography.Paragraph copyable={{ text: selected._id }}>
-                            {selected._id}
-                        </Typography.Paragraph>
-
-                        <Typography.Text strong>Status:</Typography.Text>
-                        <div>{statusTag(selected.status)}</div>
-
-                        <Typography.Text strong>User Chat ID:</Typography.Text>
-                        <Typography.Text>{selected.userChatId}</Typography.Text>
-
-                        {/* <Typography.Text strong>Driver ID:</Typography.Text>
-                        <Typography.Text>{selected.driverId ?? "-"}</Typography.Text> */}
+                    <Space direction="vertical" size="middle" style={{ width: "100%" }}>
 
                         <Typography.Text strong>Pickup:</Typography.Text>
-                        <Typography.Text>{selected.pickup?.address ?? "-"}</Typography.Text>
+                        <Space direction="vertical" size={4} style={{ width: "100%" }}>
+                            <Typography.Text>{selected.pickup?.address ?? "-"}</Typography.Text>
 
-                        <Typography.Text strong>Dropoff:</Typography.Text>
-                        <Typography.Text>{selected.dropoff?.address ?? "-"}</Typography.Text>
+                            <Space>
+                                <Button
+                                    disabled={!pickupMapsUrl(selected)}
+                                    onClick={() => {
+                                        const url = pickupMapsUrl(selected);
+                                        if (url) window.open(url, "_blank", "noopener,noreferrer");
+                                    }}
+                                >
+                                    Open pickup in Google Maps
+                                </Button>
 
-                        <Typography.Text strong>Fare:</Typography.Text>
-                        <Typography.Text>{selected.fare}</Typography.Text>
+                                <Typography.Text type="secondary">
+                                    {selected.pickup?.lat}, {selected.pickup?.lon}
+                                </Typography.Text>
+                            </Space>
+                        </Space>
 
-                        <Typography.Text strong>Candidate Drivers:</Typography.Text>
-                        <Typography.Paragraph>
-                            {selected.candidateDrivers?.length
-                                ? selected.candidateDrivers
-                                    .map((c) => `${c.driverId} (${c.distKm} km)`)
-                                    .join(", ")
-                                : "-"}
-                        </Typography.Paragraph>
+                        {/* Status history */}
+                        <Typography.Text strong>Status History:</Typography.Text>
+
+                        <Table
+                            size="small"
+                            rowKey={(r: any, idx) => `${selected._id}-${idx}-${r.at}`}
+                            pagination={false}
+                            dataSource={(selected.statusHistory ?? []).slice().sort((a, b) =>
+                                dayjs(a.at).valueOf() - dayjs(b.at).valueOf()
+                            )}
+                            columns={[
+                                {
+                                    title: "At",
+                                    dataIndex: "at",
+                                    width: 170,
+                                    render: (v: string) => dayjs(v).format("YYYY-MM-DD HH:mm:ss"),
+                                },
+                                {
+                                    title: "Status",
+                                    dataIndex: "status",
+                                    width: 120,
+                                    render: (v: RideStatus) => statusTag(v),
+                                },
+                                {
+                                    title: "By",
+                                    dataIndex: "by",
+                                    width: 100,
+                                    render: (v: string) => v ?? "-",
+                                },
+                                {
+                                    title: "Driver",
+                                    dataIndex: "driverId",
+                                    render: (d: any) => {
+                                        // populated driver object OR undefined
+                                        if (!d) return "-";
+                                        return (
+                                            <Space direction="vertical" size={0}>
+                                                <Typography.Text>
+                                                    {d.name ?? "-"} • {d.phone ?? "-"}
+                                                </Typography.Text>
+                                                <Typography.Text type="secondary">
+                                                    {d.carModel} • {d.carColor} • {d.carNumber}
+                                                </Typography.Text>
+                                            </Space>
+                                        );
+                                    },
+                                },
+                                {
+                                    title: "Dist",
+                                    dataIndex: "distKm",
+                                    width: 90,
+                                    render: (v: number) => (typeof v === "number" ? `${v.toFixed(2)} km` : "-"),
+                                },
+                                {
+                                    title: "Note",
+                                    dataIndex: "note",
+                                    render: (v: string) => v ?? "-",
+                                },
+                            ]}
+                        />
                     </Space>
                 )}
             </Drawer>

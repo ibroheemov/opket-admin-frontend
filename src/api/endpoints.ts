@@ -32,27 +32,81 @@ export type LoginRequest = { email: string; password: string };
 
 export type LoginResponse = { token: string };
 
+export type RideStatus =
+    | "pending"
+    | "offered"
+    | "accepted"
+    | "arrived"
+    | "started"
+    | "completed"
+    | "cancelled";
+
+export type StatusBy = "system" | "user" | "driver" | "admin";
+
+// What statusHistory entries look like on the client
+export type RideStatusEvent = {
+    status: RideStatus;
+    at: string;              // ISO date string (because you .lean() and send JSON)
+    by?: StatusBy;
+    note?: string;
+    distKm?: number;
+
+    // driverId can be:
+    // - populated driver object (when you use populate)
+    // - string/ObjectId as string (if not populated)
+    // - null/undefined
+    driverId?:
+    | string
+    | {
+        _id: string;
+        name?: string;
+        phone?: string;
+        carModel?: string;
+        carColor?: string;
+        carNumber?: string;
+    };
+};
+
 export type Ride = {
     _id: string;
     userId?: string;
     userPhoneNumber?: number;
     userChatId: number;
-    driverId?: { carModel: string, carColor: string, carNumber: string };
+
+    // Top-level driver (populated in list endpoint)
+    driverId?: {
+        _id?: string;
+        carModel: string;
+        carColor: string;
+        carNumber: string;
+        name?: string;
+        phone?: string;
+    };
+
     pickup: { lat: number; lon: number; address?: string };
     dropoff?: { lat: number; lon: number; address?: string };
-    status: "pending" | "offered" | "accepted" | "arrived" | "started" | "completed" | "cancelled";
+
+    status: RideStatus;
+
+    // ✅ add this
+    statusHistory?: RideStatusEvent[];
+
     fare: number;
     fareEstimate?: number;
     distanceKm?: number;
+
     createdAt?: string;
     startedAt?: string;
     endedAt?: string;
+
     luggage: boolean;
     type: "app" | "bot";
     rideType: "standard" | "premium" | "comfort";
+
     distanceTraveled: number;
     offeredTo?: string;
     offerExpiresAt?: string;
+
     candidateDrivers: { driverId: string; distKm: number }[];
     lastLocation?: { lat: number; lon: number };
 };
