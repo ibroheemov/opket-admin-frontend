@@ -76,6 +76,7 @@ export default function DriversPage() {
                 ),
             },
             { title: "Phone", dataIndex: "phone", width: 140 },
+            { title: "Ilova Versiyasi", dataIndex: "appVersion", width: 140 },
             {
                 title: "Vehicle",
                 dataIndex: "vehicle",
