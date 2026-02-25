@@ -18,6 +18,7 @@ export default function AdminLayout() {
         if (path.startsWith("/app/food/restaurants")) return ["food-restaurants"];
         if (path.startsWith("/app/food/orders")) return ["food-orders"];
         if (path.startsWith("/app/food/settings")) return ["food-settings"];
+        if (path.startsWith("/app/food/owners")) return ["food-owners"];
 
         return [];
     }, [location.pathname]);
@@ -65,6 +66,10 @@ export default function AdminLayout() {
                                 {
                                     key: "food-orders",
                                     label: <Link to="/app/food/orders">Buyurtmalar</Link>,
+                                },
+                                {
+                                    key: "food-owners",
+                                    label: <Link to="/app/food/owners">Restoran Egalari</Link>,
                                 },
                                 {
                                     key: "food-settings",

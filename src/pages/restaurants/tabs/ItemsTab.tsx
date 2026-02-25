@@ -32,7 +32,6 @@ type Item = {
     sort_order: number;
 };
 
-const centsToMoney = (cents: number) => (Number.isFinite(cents) ? (cents / 100).toFixed(2) : "0.00");
 
 export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
     const [items, setItems] = useState<Item[]>([]);
@@ -101,7 +100,7 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
             title: "Price",
             dataIndex: "price",
             width: 120,
-            render: (v: number) => centsToMoney(v),
+            render: (v: number) => v,
         },
         {
             title: "Available",
