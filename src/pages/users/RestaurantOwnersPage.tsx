@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Button, Input, Modal, Space, Switch, Table, Tag, Typography, message } from "antd";
+import { Button, Flex, Input, Modal, Space, Switch, Table, Tag, Typography, message } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { RestaurantOwnersAPI, type RestaurantOwner } from "../../api/restaurant-owners";
 import CreateRestaurantOwnerForm from "./CreateRestaurantOwnerForm";
@@ -96,7 +96,7 @@ export default function RestaurantOwnersPage() {
     ];
 
     return (
-        <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+        <Flex vertical gap="middle" style={{ width: "100%" }}>
             {contextHolder}
 
             <Space style={{ width: "100%", justifyContent: "space-between" }}>
@@ -162,6 +162,6 @@ export default function RestaurantOwnersPage() {
                     }}
                 />
             </Modal>
-        </Space>
+        </Flex>
     );
 }

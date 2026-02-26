@@ -3,6 +3,7 @@ import {
     Button,
     DatePicker,
     Drawer,
+    Flex,
     Input,
     Select,
     Space,
@@ -193,7 +194,7 @@ export default function RidesPage() {
     };
 
     return (
-        <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+        <Flex vertical gap="middle" style={{ width: "100%" }}>
             <Typography.Title level={2} style={{ margin: 0 }}>
                 Rides
             </Typography.Title>
@@ -291,13 +292,13 @@ export default function RidesPage() {
                 title="Ride details"
                 open={!!selected}
                 onClose={() => setSelected(null)}
-                width={720}
+                size="large"
             >
                 {selected && (
-                    <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+                    <Flex vertical gap="middle" style={{ width: "100%" }}>
 
                         <Typography.Text strong>Pickup:</Typography.Text>
-                        <Space direction="vertical" size={4} style={{ width: "100%" }}>
+                        <Flex vertical gap={4} style={{ width: "100%" }}>
                             <Typography.Text>{selected.pickup?.address ?? "-"}</Typography.Text>
 
                             <Space>
@@ -315,7 +316,7 @@ export default function RidesPage() {
                                     {selected.pickup?.lat}, {selected.pickup?.lon}
                                 </Typography.Text>
                             </Space>
-                        </Space>
+                        </Flex>
 
                         {/* Status history */}
                         <Typography.Text strong>Status History:</Typography.Text>
@@ -353,14 +354,14 @@ export default function RidesPage() {
                                         // populated driver object OR undefined
                                         if (!d) return "-";
                                         return (
-                                            <Space direction="vertical" size={0}>
+                                            <Flex vertical gap={0}>
                                                 <Typography.Text>
                                                     {d.name ?? "-"} • {d.phone ?? "-"}
                                                 </Typography.Text>
                                                 <Typography.Text type="secondary">
                                                     {d.carModel} • {d.carColor} • {d.carNumber}
                                                 </Typography.Text>
-                                            </Space>
+                                            </Flex>
                                         );
                                     },
                                 },
@@ -377,9 +378,9 @@ export default function RidesPage() {
                                 },
                             ]}
                         />
-                    </Space>
+                    </Flex>
                 )}
             </Drawer>
-        </Space>
+        </Flex>
     );
 }

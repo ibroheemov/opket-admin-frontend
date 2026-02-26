@@ -153,3 +153,21 @@ export const DriverAPI = {
         return data;
     },
 };
+
+export type OnlineDriver = {
+    driverId: string | Driver;
+    latitude: number;
+    longitude: number;
+};
+
+export type GetOnlineDriversResponse = {
+    count: number;
+    drivers: OnlineDriver[];
+};
+
+export const OnlineDriversAPI = {
+    list: async () => {
+        const { data } = await api.get<GetOnlineDriversResponse>("/drivers/online-drivers");
+        return data;
+    },
+};

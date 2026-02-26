@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Input, Modal, Space, Table, Typography, message, Form } from "antd";
+import { Button, Flex, Input, Modal, Space, Table, Typography, message, Form } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { UploadFile } from "antd/es/upload/interface";
 import { useNavigate } from "react-router-dom";
@@ -117,7 +117,7 @@ export default function RestaurantsPage() {
 
 
     return (
-        <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+        <Flex vertical gap="middle" style={{ width: "100%" }}>
             {contextHolder}
 
             <Space style={{ width: "100%", justifyContent: "space-between" }}>
@@ -181,6 +181,6 @@ export default function RestaurantsPage() {
                     }
                 />
             </Modal>
-        </Space>
+        </Flex>
     );
 }

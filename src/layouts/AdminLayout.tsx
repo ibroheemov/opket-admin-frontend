@@ -14,6 +14,7 @@ export default function AdminLayout() {
 
         if (path.startsWith("/app/dashboard")) return ["dashboard"];
         if (path.startsWith("/app/taxi/drivers")) return ["taxi-drivers"];
+        if (path.startsWith("/app/taxi/map")) return ["taxi-map"];
         if (path.startsWith("/app/taxi/orders")) return ["taxi-orders"];
         if (path.startsWith("/app/food/restaurants")) return ["food-restaurants"];
         if (path.startsWith("/app/food/orders")) return ["food-orders"];
@@ -51,6 +52,10 @@ export default function AdminLayout() {
                                 {
                                     key: "taxi-orders",
                                     label: <Link to="/app/taxi/orders">Buyurtmalar</Link>,
+                                },
+                                {
+                                    key: "taxi-map",
+                                    label: <Link to="/app/taxi/map">Xarita</Link>,
                                 },
                             ],
                         },

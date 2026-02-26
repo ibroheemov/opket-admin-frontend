@@ -1,4 +1,4 @@
-import { Typography, Space, Button } from "antd";
+import { Typography, Flex, Button } from "antd";
 import { HealthAPI } from "../../api/endpoints";
 // import { HealthAPI } from "../../api/endpoints";
 
@@ -13,7 +13,7 @@ export default function Dashboard() {
     };
 
     return (
-        <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+        <Flex vertical gap="middle" style={{ width: "100%" }}>
             <Typography.Title level={2} style={{ margin: 0 }}>
                 Dashboard
             </Typography.Title>
@@ -21,6 +21,6 @@ export default function Dashboard() {
                 This is a protected route inside the admin layout.
             </Typography.Text>
             <Button onClick={ping}>Test API ping</Button>
-        </Space>
+        </Flex>
     );
 }

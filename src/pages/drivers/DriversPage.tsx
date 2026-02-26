@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
     Button,
+    Flex,
     Form,
     Input,
     InputNumber,
@@ -67,12 +68,12 @@ export default function DriversPage() {
                 title: "Name",
                 dataIndex: "name",
                 render: (_, d) => (
-                    <Space direction="vertical" size={0}>
+                    <Flex vertical gap={0}>
                         <Typography.Text strong>{d.name}</Typography.Text>
                         <Typography.Text type="secondary">
                             {d.firstname} {d.lastname}
                         </Typography.Text>
-                    </Space>
+                    </Flex>
                 ),
             },
             { title: "Phone", dataIndex: "phone", width: 140 },
@@ -166,7 +167,7 @@ export default function DriversPage() {
     };
 
     return (
-        <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+        <Flex vertical gap="middle" style={{ width: "100%" }}>
             <Typography.Title level={2} style={{ margin: 0 }}>
                 Drivers
             </Typography.Title>
@@ -291,6 +292,6 @@ export default function DriversPage() {
                     </Form.Item>
                 </Form>
             </Modal>
-        </Space>
+        </Flex>
     );
 }

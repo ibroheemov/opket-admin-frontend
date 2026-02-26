@@ -1,4 +1,4 @@
-import { Button, Drawer, Form, Input, InputNumber, Modal, Popconfirm, Space, Switch, Table, Typography, message } from "antd";
+import { Button, Drawer, Flex, Form, Input, InputNumber, Modal, Popconfirm, Space, Switch, Table, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { MenuAPI } from "../../../api/menu";
@@ -195,8 +195,8 @@ export default function ModifiersDrawer({
     };
 
     return (
-        <Drawer open={open} onClose={onClose} title="Modifiers" width={720}>
-            <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+        <Drawer open={open} onClose={onClose} title="Modifiers" size="large">
+            <Flex vertical gap="middle" style={{ width: "100%" }}>
                 <Typography.Text type="secondary">Item</Typography.Text>
                 <Typography.Title level={4} style={{ margin: 0 }}>
                     {item?.name ?? "-"}
@@ -236,7 +236,7 @@ export default function ModifiersDrawer({
                         rowExpandable: () => true,
                     }}
                 />
-            </Space>
+            </Flex>
 
             {/* Create group modal */}
             <Modal

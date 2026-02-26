@@ -3,6 +3,7 @@ import {
     Card,
     Col,
     Divider,
+    Flex,
     Form,
     Input,
     InputNumber,
@@ -550,7 +551,7 @@ export function RestaurantForm({
                     Media
                 </Title>
 
-                <Space direction="vertical" style={{ width: "100%" }} size={12}>
+                <Flex vertical style={{ width: "100%" }} gap={12}>
                     <Form.Item label="Logo">
                         <Upload
                             accept="image/*"
@@ -599,7 +600,7 @@ export function RestaurantForm({
                     </Form.Item>
                     {footer ? <div style={{ marginTop: 16 }}>{footer}</div> : null}
 
-                </Space>
+                </Flex>
             </Card>
         </Form >
     );

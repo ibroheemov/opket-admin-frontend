@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
+    "@react-google-maps/api": "^2.20.8",
     "antd": "^6.2.2",
     "axios": "^1.13.4",
     "react": "^19.2.0",
