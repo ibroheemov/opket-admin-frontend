@@ -21,7 +21,7 @@ export default function CategoriesTab({ restaurantId }: { restaurantId: string }
             const res = await MenuAPI.categories(restaurantId);
             setData(res.data.categories ?? []);
         } catch (e: any) {
-            message.error(e?.response?.data?.message ?? "Failed to load categories");
+            message.error(e?.response?.data?.message ?? "Kategoriyalarni yuklashda xatolik");
         } finally {
             setLoading(false);
         }
@@ -33,8 +33,8 @@ export default function CategoriesTab({ restaurantId }: { restaurantId: string }
     }, [restaurantId]);
 
     const columns: ColumnsType<Category> = [
-        { title: "Name", dataIndex: "name" },
-        { title: "Order", dataIndex: "sort_order", width: 110 },
+        { title: "Nomi", dataIndex: "name" },
+        { title: "Tartib", dataIndex: "sort_order", width: 110 },
         {
             title: "",
             width: 160,
@@ -48,25 +48,25 @@ export default function CategoriesTab({ restaurantId }: { restaurantId: string }
                             setOpen(true);
                         }}
                     >
-                        Edit
+                        Tahrirlash
                     </Button>
 
                     <Popconfirm
-                        title="Delete category?"
-                        okText="Delete"
+                        title="Kategoriyani o'chirasizmi?"
+                        okText="O'chirish"
                         okButtonProps={{ danger: true }}
                         onConfirm={async () => {
                             try {
                                 await MenuAPI.deleteCategory(row._id);
-                                message.success("Deleted");
+                                message.success("O'chirildi");
                                 load();
                             } catch (e: any) {
-                                message.error(e?.response?.data?.message ?? "Delete failed");
+                                message.error(e?.response?.data?.message ?? "O'chirish muvaffaqiyatsiz");
                             }
                         }}
                     >
                         <Button type="link" danger>
-                            Delete
+                            O'chirish
                         </Button>
                     </Popconfirm>
                 </Space>
@@ -81,10 +81,10 @@ export default function CategoriesTab({ restaurantId }: { restaurantId: string }
 
             if (editing) {
                 await MenuAPI.updateCategory(editing._id, values);
-                message.success("Updated");
+                message.success("Yangilandi");
             } else {
                 await MenuAPI.createCategory(restaurantId, values);
-                message.success("Created");
+                message.success("Yaratildi");
             }
 
             setOpen(false);
@@ -93,7 +93,7 @@ export default function CategoriesTab({ restaurantId }: { restaurantId: string }
             load();
         } catch (e: any) {
             if (e?.errorFields) return;
-            message.error(e?.response?.data?.message ?? "Save failed");
+            message.error(e?.response?.data?.message ?? "Saqlash muvaffaqiyatsiz");
         } finally {
             setSaving(false);
         }
@@ -110,18 +110,18 @@ export default function CategoriesTab({ restaurantId }: { restaurantId: string }
                         setOpen(true);
                     }}
                 >
-                    Add Category
+                    Kategoriya qo'shish
                 </Button>
 
                 <Button onClick={load} loading={loading}>
-                    Refresh
+                    Yangilash
                 </Button>
             </Space>
 
             <Table<Category> rowKey="_id" loading={loading} dataSource={data} columns={columns} pagination={false} />
 
             <Modal
-                title={editing ? "Edit Category" : "Add Category"}
+                title={editing ? "Kategoriyani tahrirlash" : "Kategoriya qo'shish"}
                 open={open}
                 onCancel={() => {
                     setOpen(false);
@@ -131,10 +131,10 @@ export default function CategoriesTab({ restaurantId }: { restaurantId: string }
                 confirmLoading={saving}
             >
                 <Form form={form} layout="vertical">
-                    <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+                    <Form.Item name="name" label="Nomi" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item name="sort_order" label="Sort order" initialValue={0}>
+                    <Form.Item name="sort_order" label="Tartib raqami" initialValue={0}>
                         <InputNumber min={0} style={{ width: "100%" }} />
                     </Form.Item>
                 </Form>

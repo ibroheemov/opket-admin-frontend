@@ -11,18 +11,13 @@ export default function Login() {
 
     const onFinish = async (values: { email: string; password: string }) => {
         try {
-            // Replace with real endpoint response.
             const res = await AuthAPI.login(values);
             login(res.token);
 
-            // Demo token:
-            // const fakeToken = "demo-token";
-            // login(fakeToken);
-
-            msg.success("Logged in!");
+            msg.success("Tizimga kirildi!");
             navigate("/app/dashboard", { replace: true });
         } catch (e: any) {
-            msg.error(e?.response?.data?.message ?? "Login failed");
+            msg.error(e?.response?.data?.message ?? "Kirish muvaffaqiyatsiz");
         }
     };
 
@@ -43,12 +38,12 @@ export default function Login() {
                         <Input placeholder="991235678" />
                     </Form.Item>
 
-                    <Form.Item label="Parol" name="password" rules={[{ required: true, message: "Parol raqam majburiy" }]}>
+                    <Form.Item label="Parol" name="password" rules={[{ required: true, message: "Parol majburiy" }]}>
                         <Input.Password placeholder="••••••••" />
                     </Form.Item>
 
                     <Button type="primary" htmlType="submit" block>
-                        Login
+                        Kirish
                     </Button>
                 </Form>
             </Card>

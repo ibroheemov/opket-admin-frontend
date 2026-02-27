@@ -33,7 +33,7 @@ export default function RestaurantTypesTab() {
             const res = await FoodAPI.restaurantTypes();
             setData(res.data.categories ?? []);
         } catch (e: any) {
-            message.error(e?.response?.data?.message ?? "Failed to load categories");
+            message.error(e?.response?.data?.message ?? "Yo'nalishlarni yuklashda xatolik");
         } finally {
             setLoading(false);
         }
@@ -45,10 +45,10 @@ export default function RestaurantTypesTab() {
     }, []);
 
     const columns: ColumnsType<RestaurantType> = [
-        { title: "Name", dataIndex: "name" },
-        { title: "Order", dataIndex: "sort_order", width: 110 },
+        { title: "Nomi", dataIndex: "name" },
+        { title: "Tartib", dataIndex: "sort_order", width: 110 },
         {
-            title: "Image",
+            title: "Rasm",
             dataIndex: "image_url",
             width: 90,
             render: (url) =>
@@ -67,25 +67,25 @@ export default function RestaurantTypesTab() {
                         type="link"
                         onClick={() => openEdit(row)}
                     >
-                        Edit
+                        Tahrirlash
                     </Button>
 
                     <Popconfirm
-                        title="Delete category?"
-                        okText="Delete"
+                        title="Yo'nalishni o'chirasizmi?"
+                        okText="O'chirish"
                         okButtonProps={{ danger: true }}
                         onConfirm={async () => {
                             try {
                                 await MenuAPI.deleteCategory(row._id);
-                                message.success("Deleted");
+                                message.success("O'chirildi");
                                 load();
                             } catch (e: any) {
-                                message.error(e?.response?.data?.message ?? "Delete failed");
+                                message.error(e?.response?.data?.message ?? "O'chirish muvaffaqiyatsiz");
                             }
                         }}
                     >
                         <Button type="link" danger>
-                            Delete
+                            O'chirish
                         </Button>
                     </Popconfirm>
                 </Space>
@@ -105,10 +105,10 @@ export default function RestaurantTypesTab() {
 
             if (editing) {
                 await FoodAPI.updaterestaurantType(editing._id, fd);
-                message.success("Updated");
+                message.success("Yangilandi");
             } else {
                 await FoodAPI.createrestaurantType(fd);
-                message.success("Created");
+                message.success("Yaratildi");
             }
 
             setOpen(false);
@@ -119,7 +119,7 @@ export default function RestaurantTypesTab() {
             load();
         } catch (e: any) {
             if (e?.errorFields) return;
-            message.error(e?.response?.data?.message ?? "Save failed");
+            message.error(e?.response?.data?.message ?? "Saqlash muvaffaqiyatsiz");
         } finally {
             setSaving(false);
         }
@@ -134,7 +134,7 @@ export default function RestaurantTypesTab() {
             setFileList([
                 {
                     uid: "existing",
-                    name: "image",
+                    name: "rasm",
                     status: "done",
                     url: row.image_url,
                 },
@@ -159,18 +159,18 @@ export default function RestaurantTypesTab() {
                         setOpen(true);
                     }}
                 >
-                    Add Category
+                    Yo'nalish qo'shish
                 </Button>
 
                 <Button onClick={load} loading={loading}>
-                    Refresh
+                    Yangilash
                 </Button>
             </Space>
 
             <Table<RestaurantType> rowKey="_id" loading={loading} dataSource={data} columns={columns} pagination={false} />
 
             <Modal
-                title={editing ? "Edit Category" : "Add Category"}
+                title={editing ? "Yo'nalishni tahrirlash" : "Yo'nalish qo'shish"}
                 open={open}
                 onCancel={() => {
                     setOpen(false);
@@ -183,21 +183,20 @@ export default function RestaurantTypesTab() {
                 confirmLoading={saving}
             >
                 <Form form={form} layout="vertical">
-                    <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+                    <Form.Item name="name" label="Nomi" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
 
-                    <Form.Item name="sort_order" label="Sort order" initialValue={0}>
+                    <Form.Item name="sort_order" label="Tartib raqami" initialValue={0}>
                         <InputNumber min={0} style={{ width: "100%" }} />
                     </Form.Item>
 
-                    <Form.Item label="Image">
+                    <Form.Item label="Rasm">
                         <Upload
                             listType="picture-card"
                             fileList={fileList}
                             maxCount={1}
                             beforeUpload={(file) => {
-                                // stop auto upload
                                 setImageFile(file);
                                 setFileList([
                                     {
@@ -214,11 +213,8 @@ export default function RestaurantTypesTab() {
                                 setFileList([]);
                             }}
                         >
-                            {fileList.length >= 1 ? null : "Upload"}
+                            {fileList.length >= 1 ? null : "Yuklash"}
                         </Upload>
-
-                        {/* Optional: if editing and want to allow "remove existing image" */}
-                        {/* You could add a checkbox that sends remove_image=true, see note below. */}
                     </Form.Item>
                 </Form>
             </Modal>

@@ -46,7 +46,6 @@ export type RestaurantFormValues = {
     postalCode?: string;
     country?: string;
 
-    // location input (we’ll convert to GeoJSON on submit)
     lat?: number;
     lng?: number;
 
@@ -59,7 +58,6 @@ export type RestaurantFormValues = {
     temporarily_closed_reason?: string;
 
     timezone?: string;
-    // hours_json not included here (usually separate schedule editor)
 
     fulfillment_modes: FulfillmentMode[];
     payment_methods: PaymentMethod[];
@@ -86,12 +84,11 @@ type Props = {
     form: FormInstance<RestaurantFormValues>;
     disabled?: boolean;
 
-    initialValues?: Partial<RestaurantFormValues>; // allow override from edit/create wrapper
+    initialValues?: Partial<RestaurantFormValues>;
 
     onFinish?: (values: RestaurantFormValues) => void;
-    footer?: React.ReactNode; // optional save button area (wrapper can provide)
+    footer?: React.ReactNode;
 
-    // uploads...
     logoFileList: UploadFile[];
     setLogoFileList: (v: UploadFile[]) => void;
     bannerFileList: UploadFile[];
@@ -119,7 +116,7 @@ export function RestaurantForm({
     setBannerFileList,
     galleryFileList,
     setGalleryFileList,
-    title = "Restaurant",
+    title = "Restoran",
     showStatusField = true,
     footer,
     onFinish
@@ -192,7 +189,6 @@ export function RestaurantForm({
         }
     };
 
-    // initial load
     React.useEffect(() => {
         fetchOwners();
     }, []);
@@ -210,19 +206,19 @@ export function RestaurantForm({
                     <Col xs={24} md={12}>
                         <Form.Item
                             name="ownerUserId"
-                            label="Owner"
-                            rules={[{ required: true, message: "Please select an owner" }]}
-                            tooltip="This user will manage the restaurant"
+                            label="Egasi"
+                            rules={[{ required: true, message: "Egasini tanlang" }]}
+                            tooltip="Bu foydalanuvchi restoranni boshqaradi"
                         >
                             <Select
                                 showSearch
-                                placeholder="Select restaurant owner..."
+                                placeholder="Restoran egasini tanlang..."
                                 filterOption={false}
                                 onSearch={(val) => fetchOwners(val)}
                                 onDropdownVisibleChange={(open) => {
                                     if (open && owners.length === 0) fetchOwners();
                                 }}
-                                notFoundContent={ownersLoading ? <Spin size="small" /> : "No owners found"}
+                                notFoundContent={ownersLoading ? <Spin size="small" /> : "Egalar topilmadi"}
                                 options={owners.map((o) => ({
                                     value: o._id,
                                     label: `${o.fullName} — ${o.email}${o.phone ? ` (${o.phone})` : ""}`,
@@ -235,7 +231,7 @@ export function RestaurantForm({
                 {showStatusField && (
                     <Row gutter={16}>
                         <Col xs={24} md={8}>
-                            <Form.Item name="status" label="Status" rules={[{ required: true }]}>
+                            <Form.Item name="status" label="Holat" rules={[{ required: true }]}>
                                 <Select options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
                             </Form.Item>
                         </Col>
@@ -246,19 +242,19 @@ export function RestaurantForm({
 
                 <Row gutter={16}>
                     <Col xs={24} md={12}>
-                        <Form.Item name="name" label="Name" rules={[{ required: true, message: "Name is required" }]}>
+                        <Form.Item name="name" label="Nomi" rules={[{ required: true, message: "Nom majburiy" }]}>
                             <Input />
                         </Form.Item>
                     </Col>
                     <Col xs={24} md={12}>
-                        <Form.Item name="phone" label="Phone" rules={[{ required: true, message: "Phone is required" }]}>
+                        <Form.Item name="phone" label="Telefon" rules={[{ required: true, message: "Telefon majburiy" }]}>
                             <Input />
                         </Form.Item>
                     </Col>
 
                     <Col span={24}>
-                        <Form.Item name="description" label="Description">
-                            <Input.TextArea rows={3} placeholder="Short description..." />
+                        <Form.Item name="description" label="Tavsif">
+                            <Input.TextArea rows={3} placeholder="Qisqa tavsif..." />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -266,39 +262,39 @@ export function RestaurantForm({
                 <Divider />
 
                 <Title level={5} style={{ marginTop: 0 }}>
-                    Address
+                    Manzil
                 </Title>
 
                 <Row gutter={16}>
                     <Col xs={24} md={12}>
-                        <Form.Item name="addressLine1" label="Address line 1" rules={[{ required: true }]}>
+                        <Form.Item name="addressLine1" label="Manzil 1-qator" rules={[{ required: true }]}>
                             <Input />
                         </Form.Item>
                     </Col>
                     <Col xs={24} md={12}>
-                        <Form.Item name="addressLine2" label="Address line 2">
+                        <Form.Item name="addressLine2" label="Manzil 2-qator">
                             <Input />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="city" label="City" rules={[{ required: true }]}>
+                        <Form.Item name="city" label="Shahar" rules={[{ required: true }]}>
                             <Input />
                         </Form.Item>
                     </Col>
                     <Col xs={24} md={8}>
-                        <Form.Item name="region" label="Region" rules={[{ required: true }]}>
+                        <Form.Item name="region" label="Viloyat" rules={[{ required: true }]}>
                             <Input />
                         </Form.Item>
                     </Col>
                     <Col xs={24} md={8}>
-                        <Form.Item name="postalCode" label="Postal code">
+                        <Form.Item name="postalCode" label="Pochta indeksi">
                             <Input />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="country" label="Country">
+                        <Form.Item name="country" label="Davlat">
                             <Input placeholder="UZ" />
                         </Form.Item>
                     </Col>
@@ -307,23 +303,23 @@ export function RestaurantForm({
                 <Divider />
 
                 <Title level={5} style={{ marginTop: 0 }}>
-                    Location (Geo)
+                    Joylashuv (Geo)
                 </Title>
                 <Text type="secondary">
-                    Stored as GeoJSON <code>Point</code> with <code>[lng, lat]</code>.
+                    GeoJSON <code>Point</code> formatida <code>[lng, lat]</code> saqlanadi.
                 </Text>
 
                 <Row gutter={16} style={{ marginTop: 8 }}>
                     <Col xs={24} md={12}>
                         <Form.Item
                             name="lat"
-                            label="Latitude"
+                            label="Kenglik (Latitude)"
                             rules={[
                                 {
                                     validator: (_, v) => {
                                         if (v === undefined || v === null || v === "") return Promise.resolve();
                                         const n = Number(v);
-                                        if (!Number.isFinite(n) || n < -90 || n > 90) return Promise.reject("Lat must be -90..90");
+                                        if (!Number.isFinite(n) || n < -90 || n > 90) return Promise.reject("Kenglik -90..90 orasida bo'lishi kerak");
                                         return Promise.resolve();
                                     },
                                 },
@@ -335,13 +331,13 @@ export function RestaurantForm({
                     <Col xs={24} md={12}>
                         <Form.Item
                             name="lng"
-                            label="Longitude"
+                            label="Uzunlik (Longitude)"
                             rules={[
                                 {
                                     validator: (_, v) => {
                                         if (v === undefined || v === null || v === "") return Promise.resolve();
                                         const n = Number(v);
-                                        if (!Number.isFinite(n) || n < -180 || n > 180) return Promise.reject("Lng must be -180..180");
+                                        if (!Number.isFinite(n) || n < -180 || n > 180) return Promise.reject("Uzunlik -180..180 orasida bo'lishi kerak");
                                         return Promise.resolve();
                                     },
                                 },
@@ -362,9 +358,9 @@ export function RestaurantForm({
                     <Col xs={24} md={12}>
                         <Form.Item
                             name="cuisineTypeId"
-                            label="Cuisine types"
-                            tooltip="Used for filtering/search"
-                            rules={[{ required: true, message: "Add at least 1 cuisine type" }]}
+                            label="Oshxona turlari"
+                            tooltip="Qidirish va filtrlash uchun ishlatiladi"
+                            rules={[{ required: true, message: "Kamida 1 ta oshxona turi qo'shing" }]}
                         >
                             <CuisineTypes onChange={function (): void {
                                 throw new Error("Function not implemented.");
@@ -373,13 +369,13 @@ export function RestaurantForm({
                     </Col>
 
                     <Col xs={24} md={12}>
-                        <Form.Item name="tags" label="Tags">
-                            <Select mode="tags" placeholder="Vegan-friendly, Family meals..." />
+                        <Form.Item name="tags" label="Teglar">
+                            <Select mode="tags" placeholder="Vegan, Oilaviy taomlar..." />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="price_tier" label="Price tier">
+                        <Form.Item name="price_tier" label="Narx darajasi">
                             <Select
                                 allowClear
                                 options={PRICE_TIERS.map((p) => ({ value: p, label: "$".repeat(p) }))}
@@ -388,7 +384,7 @@ export function RestaurantForm({
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="currency" label="Currency" rules={[{ required: true }]}>
+                        <Form.Item name="currency" label="Valyuta" rules={[{ required: true }]}>
                             <Select options={CURRENCIES.map((c) => ({ value: c, label: c }))} />
                         </Form.Item>
                     </Col>
@@ -396,7 +392,7 @@ export function RestaurantForm({
                     <Col xs={24} md={8}>
                         <Form.Item
                             name="commission_percent"
-                            label="Commission %"
+                            label="Komissiya %"
                             rules={[{ type: "number", min: 0, max: 100, message: "0..100" }]}
                         >
                             <InputNumber style={{ width: "100%" }} min={0} max={100} step={0.5} />
@@ -407,24 +403,24 @@ export function RestaurantForm({
                 <Divider />
 
                 <Title level={5} style={{ marginTop: 0 }}>
-                    Availability
+                    Mavjudlik
                 </Title>
 
                 <Row gutter={16}>
                     <Col xs={24} md={8}>
-                        <Form.Item name="is_open" label="Open (manual)" valuePropName="checked">
+                        <Form.Item name="is_open" label="Ochiq (qo'lda)" valuePropName="checked">
                             <Switch />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="accepting_orders" label="Accepting orders" valuePropName="checked">
+                        <Form.Item name="accepting_orders" label="Buyurtma qabul qilish" valuePropName="checked">
                             <Switch />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="timezone" label="Timezone">
+                        <Form.Item name="timezone" label="Vaqt mintaqasi">
                             <Input placeholder="Asia/Tashkent" />
                         </Form.Item>
                     </Col>
@@ -433,10 +429,10 @@ export function RestaurantForm({
                         <Col span={24}>
                             <Form.Item
                                 name="temporarily_closed_reason"
-                                label="Closed reason (shown to users)"
-                                rules={[{ max: 300, message: "Max 300 chars" }]}
+                                label="Yopilish sababi (foydalanuvchilarga ko'rsatiladi)"
+                                rules={[{ max: 300, message: "Maksimum 300 ta belgi" }]}
                             >
-                                <Input placeholder="Kitchen is busy, please try later" />
+                                <Input placeholder="Oshxona band, keyinroq urinib ko'ring" />
                             </Form.Item>
                         </Col>
                     ) : null}
@@ -445,30 +441,30 @@ export function RestaurantForm({
                 <Divider />
 
                 <Title level={5} style={{ marginTop: 0 }}>
-                    Fulfillment & Payments
+                    Yetkazish va To'lov
                 </Title>
 
                 <Row gutter={16}>
                     <Col xs={24} md={12}>
-                        <Form.Item name="fulfillment_modes" label="Fulfillment modes" rules={[{ required: true }]}>
+                        <Form.Item name="fulfillment_modes" label="Yetkazish usullari" rules={[{ required: true }]}>
                             <Select mode="multiple" options={FULFILLMENT.map((v) => ({ value: v, label: v }))} />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={12}>
-                        <Form.Item name="payment_methods" label="Payment methods" rules={[{ required: true }]}>
+                        <Form.Item name="payment_methods" label="To'lov usullari" rules={[{ required: true }]}>
                             <Select mode="multiple" options={PAYMENTS.map((v) => ({ value: v, label: v }))} />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="supports_scheduled_orders" label="Scheduled orders" valuePropName="checked">
+                        <Form.Item name="supports_scheduled_orders" label="Rejalashtirilgan buyurtmalar" valuePropName="checked">
                             <Switch />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="auto_accept_orders" label="Auto-accept orders" valuePropName="checked">
+                        <Form.Item name="auto_accept_orders" label="Avtomatik qabul qilish" valuePropName="checked">
                             <Switch />
                         </Form.Item>
                     </Col>
@@ -477,18 +473,18 @@ export function RestaurantForm({
                 <Divider />
 
                 <Title level={5} style={{ marginTop: 0 }}>
-                    Preparation time
+                    Tayyorlash vaqti
                 </Title>
 
                 <Row gutter={16}>
                     <Col xs={24} md={12}>
-                        <Form.Item name="prep_time_min" label="Prep time min (min)" rules={[{ required: true, type: "number", min: 1 }]}>
+                        <Form.Item name="prep_time_min" label="Minimal vaqt (daq)" rules={[{ required: true, type: "number", min: 1 }]}>
                             <InputNumber style={{ width: "100%" }} min={1} />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={12}>
-                        <Form.Item name="prep_time_max" label="Prep time max (min)" rules={[{ required: true, type: "number", min: 1 }]}>
+                        <Form.Item name="prep_time_max" label="Maksimal vaqt (daq)" rules={[{ required: true, type: "number", min: 1 }]}>
                             <InputNumber style={{ width: "100%" }} min={1} />
                         </Form.Item>
                     </Col>
@@ -497,12 +493,12 @@ export function RestaurantForm({
                 <Divider />
 
                 <Title level={5} style={{ marginTop: 0 }}>
-                    Delivery settings
+                    Yetkazish sozlamalari
                 </Title>
 
                 <Row gutter={16}>
                     <Col xs={24} md={8}>
-                        <Form.Item name="min_order_amount" label="Min order amount" rules={[{ required: true, type: "number", min: 0 }]}>
+                        <Form.Item name="min_order_amount" label="Minimal buyurtma summasi" rules={[{ required: true, type: "number", min: 0 }]}>
                             <InputNumber style={{ width: "100%" }} min={0} />
                         </Form.Item>
                     </Col>
@@ -514,31 +510,31 @@ export function RestaurantForm({
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="delivery_fee_base" label="Base fee" rules={[{ required: true, type: "number", min: 0 }]}>
+                        <Form.Item name="delivery_fee_base" label="Asosiy narx" rules={[{ required: true, type: "number", min: 0 }]}>
                             <InputNumber style={{ width: "100%" }} min={0} />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="delivery_fee_per_km" label="Fee per km">
+                        <Form.Item name="delivery_fee_per_km" label="Har km uchun narx">
                             <InputNumber style={{ width: "100%" }} min={0} />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="delivery_fee_min" label="Min fee">
+                        <Form.Item name="delivery_fee_min" label="Minimal narx">
                             <InputNumber style={{ width: "100%" }} min={0} />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="delivery_fee_max" label="Max fee">
+                        <Form.Item name="delivery_fee_max" label="Maksimal narx">
                             <InputNumber style={{ width: "100%" }} min={0} />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={8}>
-                        <Form.Item name="delivery_free_over_amount" label="Free delivery over">
+                        <Form.Item name="delivery_free_over_amount" label="Bepul yetkazish summasi">
                             <InputNumber style={{ width: "100%" }} min={0} />
                         </Form.Item>
                     </Col>
@@ -551,7 +547,7 @@ export function RestaurantForm({
                 </Title>
 
                 <Flex vertical style={{ width: "100%" }} gap={12}>
-                    <Form.Item label="Logo">
+                    <Form.Item label="Logotip">
                         <Upload
                             accept="image/*"
                             listType="picture"
@@ -564,7 +560,7 @@ export function RestaurantForm({
                                 return true;
                             }}
                         >
-                            <Button>Upload logo</Button>
+                            <Button>Logotip yuklash</Button>
                         </Upload>
                     </Form.Item>
 
@@ -581,11 +577,11 @@ export function RestaurantForm({
                                 return true;
                             }}
                         >
-                            <Button>Upload banner</Button>
+                            <Button>Banner yuklash</Button>
                         </Upload>
                     </Form.Item>
 
-                    <Form.Item label="Gallery (optional)">
+                    <Form.Item label="Galereya (ixtiyoriy)">
                         <Upload
                             accept="image/*"
                             listType="picture"
@@ -594,7 +590,7 @@ export function RestaurantForm({
                             beforeUpload={() => false}
                             onChange={({ fileList }) => setGalleryFileList(fileList)}
                         >
-                            <Button>Upload gallery images</Button>
+                            <Button>Galereya rasmlari yuklash</Button>
                         </Upload>
                     </Form.Item>
                     {footer ? <div style={{ marginTop: 16 }}>{footer}</div> : null}

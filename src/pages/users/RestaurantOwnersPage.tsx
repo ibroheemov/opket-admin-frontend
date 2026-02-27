@@ -3,29 +3,20 @@ import { Button, Flex, Input, Modal, Space, Switch, Table, Tag, Typography, mess
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { RestaurantOwnersAPI, type RestaurantOwner } from "../../api/restaurant-owners";
 import CreateRestaurantOwnerForm from "./CreateRestaurantOwnerForm";
-// import CreateRestaurantOwnerForm from "../components/CreateRestaurantOwnerForm";
-// import {
-//   RestaurantOwnersAPI,
-//   type RestaurantOwner,
-// } from "../api/RestaurantOwnersAPI";
 
 export default function RestaurantOwnersPage() {
     const [msg, contextHolder] = message.useMessage();
 
-    // data
     const [owners, setOwners] = useState<RestaurantOwner[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // server pagination
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [total, setTotal] = useState(0);
 
-    // search + filter
     const [q, setQ] = useState("");
     const [onlyActive, setOnlyActive] = useState(false);
 
-    // create modal
     const [open, setOpen] = useState(false);
 
     const load = async () => {
@@ -43,13 +34,13 @@ export default function RestaurantOwnersPage() {
             console.log(res);
 
             if (!body.ok) {
-                msg.error("Failed to load restaurant owners");
+                msg.error("Restoran egalarini yuklashda xatolik");
                 return;
             }
             setOwners(body.owners ?? []);
             setTotal(body.meta?.total ?? (body.owners?.length ?? 0));
         } catch (e: any) {
-            msg.error(e?.response?.data?.message ?? "Failed to load restaurant owners");
+            msg.error(e?.response?.data?.message ?? "Restoran egalarini yuklashda xatolik");
         } finally {
             setLoading(false);
         }
@@ -78,17 +69,17 @@ export default function RestaurantOwnersPage() {
     );
 
     const columns: ColumnsType<RestaurantOwner> = [
-        { title: "Name", dataIndex: "fullName" },
+        { title: "Ism", dataIndex: "fullName" },
         { title: "Email", dataIndex: "email" },
-        { title: "Phone", dataIndex: "phone", width: 160, render: (v) => v ?? "-" },
+        { title: "Telefon", dataIndex: "phone", width: 160, render: (v) => v ?? "-" },
         {
-            title: "Active",
+            title: "Faollik",
             dataIndex: "isActive",
             width: 110,
-            render: (v: boolean) => (v ? <Tag color="green">Active</Tag> : <Tag>Disabled</Tag>),
+            render: (v: boolean) => (v ? <Tag color="green">Faol</Tag> : <Tag>O'chirilgan</Tag>),
         },
         {
-            title: "Created",
+            title: "Yaratilgan",
             dataIndex: "createdAt",
             width: 180,
             render: (v) => (v ? new Date(v).toLocaleString() : "-"),
@@ -101,12 +92,12 @@ export default function RestaurantOwnersPage() {
 
             <Space style={{ width: "100%", justifyContent: "space-between" }}>
                 <Typography.Title level={2} style={{ margin: 0 }}>
-                    Restaurant Owners
+                    Restoran Egalari
                 </Typography.Title>
 
                 <Space>
                     <Input.Search
-                        placeholder="Search name / email / phone..."
+                        placeholder="Ism / email / telefon qidirish..."
                         allowClear
                         value={q}
                         onChange={(e) => setQ(e.target.value)}
@@ -118,7 +109,7 @@ export default function RestaurantOwnersPage() {
                     />
 
                     <Space align="center">
-                        <Typography.Text>Only active</Typography.Text>
+                        <Typography.Text>Faqat faollar</Typography.Text>
                         <Switch
                             checked={onlyActive}
                             onChange={(v) => {
@@ -129,11 +120,11 @@ export default function RestaurantOwnersPage() {
                     </Space>
 
                     <Button onClick={load} loading={loading}>
-                        Refresh
+                        Yangilash
                     </Button>
 
                     <Button type="primary" onClick={() => setOpen(true)}>
-                        Create owner
+                        Egasi yaratish
                     </Button>
                 </Space>
             </Space>
@@ -147,7 +138,7 @@ export default function RestaurantOwnersPage() {
             />
 
             <Modal
-                title="Create Restaurant Owner"
+                title="Restoran egasini yaratish"
                 open={open}
                 footer={null}
                 onCancel={() => setOpen(false)}

@@ -23,7 +23,7 @@ const DEFAULT_ZOOM = 12;
 function driverLabel(d: OnlineDriver): string {
     if (typeof d.driverId === "object" && d.driverId !== null) {
         const driver = d.driverId as Driver;
-        return driver.name || `${driver.firstname ?? ""} ${driver.lastname ?? ""}`.trim() || driver.phone || "Driver";
+        return driver.name || `${driver.firstname ?? ""} ${driver.lastname ?? ""}`.trim() || driver.phone || "Haydovchi";
     }
     return String(d.driverId).slice(-6);
 }
