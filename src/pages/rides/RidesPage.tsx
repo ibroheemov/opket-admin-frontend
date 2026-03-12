@@ -39,7 +39,7 @@ const STATUS_OPTIONS: Ride["status"][] = [
 ];
 
 export const rideStatusColor: Record<RideStatus, TagProps["color"]> = {
-    pending: "default",     // gray
+    pending: "default",
     offered: "blue",
     accepted: "cyan",
     arrived: "purple",
@@ -52,7 +52,6 @@ const TYPE_OPTIONS: Ride["type"][] = ["app", "bot"];
 const RIDE_TYPE_OPTIONS: Ride["rideType"][] = ["standard", "premium", "comfort"];
 
 function statusTag(status: RideStatus) {
-    // keep it simple; no custom colors required
     return <Tag color={rideStatusColor[status]}>{status}</Tag>;
 }
 
@@ -61,24 +60,21 @@ export default function RidesPage() {
     const [data, setData] = useState<Ride[]>([]);
     const [total, setTotal] = useState(0);
 
-    // server-side table statedd
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
-    // filters
     const [status, setStatus] = useState<Ride["status"] | undefined>(undefined);
     const [type, setType] = useState<Ride["type"] | undefined>(undefined);
     const [rideType, setRideType] = useState<Ride["rideType"] | undefined>(undefined);
     const [q, setQ] = useState("");
     const [dateRange, setDateRange] = useState<[string, string] | undefined>(undefined);
 
-    // drawer
     const [selected, setSelected] = useState<Ride | null>(null);
 
     const columns: ColumnsType<Ride> = useMemo(
         () => [
             {
-                title: "Status",
+                title: "Holat",
                 dataIndex: "status",
                 width: 140,
                 render: (v) => statusTag(v),
@@ -96,28 +92,28 @@ export default function RidesPage() {
                 render: (v: number) => <Typography.Text>{v}</Typography.Text>,
             },
             {
-                title: "Buyurtma Turi",
+                title: "Buyurtma turi",
                 dataIndex: "rideType",
                 width: 120,
                 render: (v) => <Tag>{v}</Tag>,
             },
             {
-                title: "Driver ID",
+                title: "Haydovchi",
                 dataIndex: "driverId",
                 width: 160,
                 render: (_, r) => {
-                    const d = r.driverId; // now it's an object
+                    const d = r.driverId;
                     return d ? `${d.carModel} • ${d.carColor} • ${d.carNumber}` : "-";
                 },
             },
             {
-                title: "Fare",
+                title: "Narx",
                 dataIndex: "fare",
                 width: 110,
                 render: (v: number) => <Typography.Text>{v}</Typography.Text>,
             },
             {
-                title: "Created",
+                title: "Yaratilgan",
                 dataIndex: "createdAt",
                 width: 170,
                 render: (v?: string) => (v ? dayjs(v).format("YYYY-MM-DD HH:mm") : "-"),
@@ -128,7 +124,7 @@ export default function RidesPage() {
                 width: 80,
                 render: (_, row) => (
                     <Button type="link" onClick={() => setSelected(row)}>
-                        View
+                        Ko'rish
                     </Button>
                 ),
             },
@@ -159,7 +155,7 @@ export default function RidesPage() {
             setData(res.rides);
             setTotal(res.meta.total);
         } catch (e: any) {
-            message.error(e?.response?.data?.message ?? "Failed to load rides");
+            message.error(e?.response?.data?.message ?? "Buyurtmalarni yuklashda xatolik");
         } finally {
             setLoading(false);
         }
@@ -188,22 +184,19 @@ export default function RidesPage() {
         const lat = ride.pickup?.lat;
         const lon = ride.pickup?.lon;
         if (typeof lat !== "number" || typeof lon !== "number") return null;
-
-        // query works well across platforms
         return `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
     };
 
     return (
         <Flex vertical gap="middle" style={{ width: "100%" }}>
             <Typography.Title level={2} style={{ margin: 0 }}>
-                Rides
+                Buyurtmalar
             </Typography.Title>
 
-            {/* Filters */}
             <Space wrap>
                 <Select
                     allowClear
-                    placeholder="Status"
+                    placeholder="Holat"
                     style={{ width: 160 }}
                     value={status}
                     onChange={(v) => {
@@ -215,7 +208,7 @@ export default function RidesPage() {
 
                 <Select
                     allowClear
-                    placeholder="Type"
+                    placeholder="Turi"
                     style={{ width: 140 }}
                     value={type}
                     onChange={(v) => {
@@ -227,7 +220,7 @@ export default function RidesPage() {
 
                 <Select
                     allowClear
-                    placeholder="Ride Type"
+                    placeholder="Buyurtma turi"
                     style={{ width: 160 }}
                     value={rideType}
                     onChange={(v) => {
@@ -251,7 +244,7 @@ export default function RidesPage() {
                 />
 
                 <Input.Search
-                    placeholder="Search address..."
+                    placeholder="Manzil qidirish..."
                     style={{ width: 260 }}
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
@@ -272,11 +265,11 @@ export default function RidesPage() {
                         setPage(1);
                     }}
                 >
-                    Reset
+                    Tozalash
                 </Button>
 
                 <Button onClick={fetchRides} loading={loading}>
-                    Refresh
+                    Yangilash
                 </Button>
             </Space>
 
@@ -289,7 +282,7 @@ export default function RidesPage() {
             />
 
             <Drawer
-                title="Ride details"
+                title="Buyurtma tafsilotlari"
                 open={!!selected}
                 onClose={() => setSelected(null)}
                 size="large"
@@ -297,7 +290,7 @@ export default function RidesPage() {
                 {selected && (
                     <Flex vertical gap="middle" style={{ width: "100%" }}>
 
-                        <Typography.Text strong>Pickup:</Typography.Text>
+                        <Typography.Text strong>Chiqish nuqtasi:</Typography.Text>
                         <Flex vertical gap={4} style={{ width: "100%" }}>
                             <Typography.Text>{selected.pickup?.address ?? "-"}</Typography.Text>
 
@@ -309,7 +302,7 @@ export default function RidesPage() {
                                         if (url) window.open(url, "_blank", "noopener,noreferrer");
                                     }}
                                 >
-                                    Open pickup in Google Maps
+                                    Google Maps da ochish
                                 </Button>
 
                                 <Typography.Text type="secondary">
@@ -318,8 +311,7 @@ export default function RidesPage() {
                             </Space>
                         </Flex>
 
-                        {/* Status history */}
-                        <Typography.Text strong>Status History:</Typography.Text>
+                        <Typography.Text strong>Holat tarixi:</Typography.Text>
 
                         <Table
                             size="small"
@@ -330,28 +322,27 @@ export default function RidesPage() {
                             )}
                             columns={[
                                 {
-                                    title: "At",
+                                    title: "Vaqt",
                                     dataIndex: "at",
                                     width: 170,
                                     render: (v: string) => dayjs(v).format("YYYY-MM-DD HH:mm:ss"),
                                 },
                                 {
-                                    title: "Status",
+                                    title: "Holat",
                                     dataIndex: "status",
                                     width: 120,
                                     render: (v: RideStatus) => statusTag(v),
                                 },
                                 {
-                                    title: "By",
+                                    title: "Kim tomonidan",
                                     dataIndex: "by",
                                     width: 100,
                                     render: (v: string) => v ?? "-",
                                 },
                                 {
-                                    title: "Driver",
+                                    title: "Haydovchi",
                                     dataIndex: "driverId",
                                     render: (d: any) => {
-                                        // populated driver object OR undefined
                                         if (!d) return "-";
                                         return (
                                             <Flex vertical gap={0}>
@@ -366,13 +357,13 @@ export default function RidesPage() {
                                     },
                                 },
                                 {
-                                    title: "Dist",
+                                    title: "Masofa",
                                     dataIndex: "distKm",
                                     width: 90,
                                     render: (v: number) => (typeof v === "number" ? `${v.toFixed(2)} km` : "-"),
                                 },
                                 {
-                                    title: "Note",
+                                    title: "Izoh",
                                     dataIndex: "note",
                                     render: (v: string) => v ?? "-",
                                 },

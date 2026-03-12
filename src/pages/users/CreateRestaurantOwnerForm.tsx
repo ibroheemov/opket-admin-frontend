@@ -39,17 +39,17 @@ export default function CreateRestaurantOwnerForm({
 
             await RestaurantOwnersAPI.createRestaurantOwner(payload);
 
-            msg.success("Restaurant owner created successfully");
+            msg.success("Restoran egasi muvaffaqiyatli yaratildi");
 
             form.resetFields();
             onSuccess?.();
         } catch (e: any) {
-            if (e?.errorFields) return; // antd validation errors
+            if (e?.errorFields) return;
 
             msg.error(
                 e?.response?.data?.message ??
                 e?.message ??
-                "Failed to create restaurant owner"
+                "Restoran egasini yaratishda xatolik"
             );
         } finally {
             setSubmitting(false);
@@ -63,10 +63,10 @@ export default function CreateRestaurantOwnerForm({
             <Form layout="vertical" form={form}>
                 <Form.Item
                     name="fullName"
-                    label="Full name"
+                    label="To'liq ism"
                     rules={[
-                        { required: true, message: "Full name is required" },
-                        { min: 2, message: "Too short" },
+                        { required: true, message: "To'liq ism majburiy" },
+                        { min: 2, message: "Juda qisqa" },
                     ]}
                 >
                     <Input placeholder="Ali Karimov" />
@@ -76,58 +76,58 @@ export default function CreateRestaurantOwnerForm({
                     name="email"
                     label="Email"
                     rules={[
-                        { required: true, message: "Email is required" },
-                        { type: "email", message: "Invalid email" },
+                        { required: true, message: "Email majburiy" },
+                        { type: "email", message: "Noto'g'ri email" },
                     ]}
                 >
-                    <Input placeholder="owner@restaurant.com" />
+                    <Input placeholder="egasi@restoran.com" />
                 </Form.Item>
 
-                <Form.Item name="phone" label="Phone (optional)">
+                <Form.Item name="phone" label="Telefon (ixtiyoriy)">
                     <Input placeholder="+998901234567" />
                 </Form.Item>
 
                 <Form.Item
                     name="password"
-                    label="Password"
+                    label="Parol"
                     hasFeedback
                     rules={[
-                        { required: true, message: "Password is required" },
-                        { min: 8, message: "Minimum 8 characters" },
+                        { required: true, message: "Parol majburiy" },
+                        { min: 8, message: "Kamida 8 ta belgi" },
                     ]}
                 >
-                    <Input.Password placeholder="At least 8 characters" />
+                    <Input.Password placeholder="Kamida 8 ta belgi" />
                 </Form.Item>
 
                 <Form.Item
                     name="passwordConfirm"
-                    label="Confirm password"
+                    label="Parolni tasdiqlang"
                     dependencies={["password"]}
                     hasFeedback
                     rules={[
-                        { required: true, message: "Please confirm password" },
+                        { required: true, message: "Parolni tasdiqlang" },
                         ({ getFieldValue }) => ({
                             validator(_, value) {
                                 const p = getFieldValue("password");
                                 if (!value || value === p) return Promise.resolve();
                                 return Promise.reject(
-                                    new Error("Passwords do not match")
+                                    new Error("Parollar mos kelmaydi")
                                 );
                             },
                         }),
                     ]}
                 >
-                    <Input.Password placeholder="Repeat password" />
+                    <Input.Password placeholder="Parolni qaytaring" />
                 </Form.Item>
 
                 <Space style={{ width: "100%", justifyContent: "flex-end" }}>
                     {onCancel && (
                         <Button onClick={onCancel} disabled={submitting}>
-                            Cancel
+                            Bekor qilish
                         </Button>
                     )}
                     <Button type="primary" onClick={submit} loading={submitting}>
-                        Create
+                        Yaratish
                     </Button>
                 </Space>
             </Form>

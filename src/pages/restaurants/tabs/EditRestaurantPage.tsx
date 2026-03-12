@@ -25,14 +25,13 @@ export function EditRestaurantPage({ restaurantId }: { restaurantId: string }) {
 
             form.setFieldsValue(restaurantToFormValues(r) as any);
 
-            // prefill uploads from URLs if you have them
             setLogoFileList(r.logo_url ? [uploadFileFromUrl(r.logo_url, "logo")] : []);
             setBannerFileList(r.banner_url ? [uploadFileFromUrl(r.banner_url, "banner")] : []);
             setGalleryFileList(
                 (r.gallery_urls ?? []).map((u: string, i: number) => uploadFileFromUrl(u, `gallery-${i + 1}`))
             );
         } catch (e: any) {
-            message.error(e?.response?.data?.message ?? "Failed to load restaurant");
+            message.error(e?.response?.data?.message ?? "Restoranni yuklashda xatolik");
         } finally {
             setLoading(false);
         }
@@ -55,10 +54,10 @@ export function EditRestaurantPage({ restaurantId }: { restaurantId: string }) {
             const fd = buildRestaurantFormData(values, { logoFile, bannerFile, galleryFiles });
 
             await api.patch(`/restaurants/${restaurantId}`, fd);
-            message.success("Saved");
+            message.success("Saqlandi");
             await load();
         } catch (e: any) {
-            message.error(e?.response?.data?.message ?? "Save failed");
+            message.error(e?.response?.data?.message ?? "Saqlash muvaffaqiyatsiz");
         } finally {
             setSaving(false);
         }
@@ -72,7 +71,7 @@ export function EditRestaurantPage({ restaurantId }: { restaurantId: string }) {
         <RestaurantForm
             form={form}
             disabled={loading}
-            title="Edit restaurant"
+            title="Restoranni tahrirlash"
             showStatusField={true}
             logoFileList={logoFileList}
             setLogoFileList={setLogoFileList}
@@ -83,7 +82,7 @@ export function EditRestaurantPage({ restaurantId }: { restaurantId: string }) {
             onFinish={onFinish}
             footer={
                 <Button type="primary" htmlType="submit" loading={saving} >
-                    Save
+                    Saqlash
                 </Button>
             }
         />

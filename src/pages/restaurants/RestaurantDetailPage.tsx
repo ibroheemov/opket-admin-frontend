@@ -10,9 +10,9 @@ export default function RestaurantDetailPage() {
     return (
         <Tabs
             items={[
-                { key: "profile", label: "Profile", children: <EditRestaurantPage restaurantId={id!} /> },
-                { key: "categories", label: "Categories", children: <CategoriesTab restaurantId={id!} /> },
-                { key: "items", label: "Menu Items", children: <ItemsTab restaurantId={id!} /> },
+                { key: "profile", label: "Profil", children: <EditRestaurantPage restaurantId={id!} /> },
+                { key: "categories", label: "Kategoriyalar", children: <CategoriesTab restaurantId={id!} /> },
+                { key: "items", label: "Menyu", children: <ItemsTab restaurantId={id!} /> },
             ]}
         />
     );

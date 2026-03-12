@@ -20,12 +20,10 @@ export default function ModifiersDrawer({
     const [options, setOptions] = useState<Record<string, Option[]>>({});
     const [loading, setLoading] = useState(false);
 
-    // group modal
     const [groupModalOpen, setGroupModalOpen] = useState(false);
     const [groupSaving, setGroupSaving] = useState(false);
     const [groupForm] = Form.useForm<Partial<Group>>();
 
-    // option modal
     const [optionModalOpen, setOptionModalOpen] = useState(false);
     const [activeGroup, setActiveGroup] = useState<Group | null>(null);
     const [optionSaving, setOptionSaving] = useState(false);
@@ -39,7 +37,6 @@ export default function ModifiersDrawer({
             const gs: Group[] = res.data.groups ?? [];
             setGroups(gs);
 
-            // load options for each group (simple + safe)
             const entries = await Promise.all(
                 gs.map(async (g) => {
                     const r = await MenuAPI.options(g._id);
@@ -51,7 +48,7 @@ export default function ModifiersDrawer({
             for (const [gid, opts] of entries) map[gid] = opts;
             setOptions(map);
         } catch (e: any) {
-            message.error(e?.response?.data?.message ?? "Failed to load modifiers");
+            message.error(e?.response?.data?.message ?? "Modifikatorlarni yuklashda xatolik");
         } finally {
             setLoading(false);
         }
@@ -63,9 +60,9 @@ export default function ModifiersDrawer({
     }, [open, item?._id]);
 
     const groupColumns: ColumnsType<Group> = [
-        { title: "Group", dataIndex: "name" },
+        { title: "Guruh", dataIndex: "name" },
         { title: "Min", dataIndex: "min_select", width: 70 },
-        { title: "Max", dataIndex: "max_select", width: 70 },
+        { title: "Maks", dataIndex: "max_select", width: 70 },
         {
             title: "",
             width: 220,
@@ -78,24 +75,24 @@ export default function ModifiersDrawer({
                             setOptionModalOpen(true);
                         }}
                     >
-                        Add option
+                        Opsiya qo'shish
                     </Button>
 
                     <Popconfirm
-                        title="Delete group? (options will be deleted too)"
-                        okText="Delete"
+                        title="Guruhni o'chirasizmi? (opsiyalar ham o'chiriladi)"
+                        okText="O'chirish"
                         okButtonProps={{ danger: true }}
                         onConfirm={async () => {
                             try {
                                 await MenuAPI.deleteOptionGroup(g._id);
-                                message.success("Deleted group");
+                                message.success("Guruh o'chirildi");
                                 loadGroups();
                             } catch (e: any) {
-                                message.error(e?.response?.data?.message ?? "Delete failed");
+                                message.error(e?.response?.data?.message ?? "O'chirish muvaffaqiyatsiz");
                             }
                         }}
                     >
-                        <Button danger>Delete</Button>
+                        <Button danger>O'chirish</Button>
                     </Popconfirm>
                 </Space>
             ),
@@ -103,15 +100,15 @@ export default function ModifiersDrawer({
     ];
 
     const optionColumns: ColumnsType<Option> = [
-        { title: "Option", dataIndex: "name" },
+        { title: "Opsiya", dataIndex: "name" },
         {
-            title: "Price +",
+            title: "Narx +",
             dataIndex: "price_delta",
             width: 110,
             render: (v: number) => (v / 100).toFixed(2),
         },
         {
-            title: "Available",
+            title: "Mavjud",
             dataIndex: "is_available",
             width: 120,
             render: (v: boolean, row) => (
@@ -125,7 +122,7 @@ export default function ModifiersDrawer({
                                 [row.groupId]: (prev[row.groupId] ?? []).map((o) => (o._id === row._id ? { ...o, is_available: checked } : o)),
                             }));
                         } catch (e: any) {
-                            message.error(e?.response?.data?.message ?? "Update failed");
+                            message.error(e?.response?.data?.message ?? "Yangilash muvaffaqiyatsiz");
                         }
                     }}
                 />
@@ -136,21 +133,21 @@ export default function ModifiersDrawer({
             width: 100,
             render: (_, row) => (
                 <Popconfirm
-                    title="Delete option?"
-                    okText="Delete"
+                    title="Opsiyani o'chirasizmi?"
+                    okText="O'chirish"
                     okButtonProps={{ danger: true }}
                     onConfirm={async () => {
                         try {
                             await MenuAPI.deleteOption(row._id);
-                            message.success("Deleted option");
+                            message.success("Opsiya o'chirildi");
                             loadGroups();
                         } catch (e: any) {
-                            message.error(e?.response?.data?.message ?? "Delete failed");
+                            message.error(e?.response?.data?.message ?? "O'chirish muvaffaqiyatsiz");
                         }
                     }}
                 >
                     <Button type="link" danger>
-                        Delete
+                        O'chirish
                     </Button>
                 </Popconfirm>
             ),
@@ -163,13 +160,13 @@ export default function ModifiersDrawer({
             const values = await groupForm.validateFields();
             setGroupSaving(true);
             await MenuAPI.createOptionGroup(item._id, values);
-            message.success("Group created");
+            message.success("Guruh yaratildi");
             setGroupModalOpen(false);
             groupForm.resetFields();
             loadGroups();
         } catch (e: any) {
             if (e?.errorFields) return;
-            message.error(e?.response?.data?.message ?? "Create failed");
+            message.error(e?.response?.data?.message ?? "Yaratish muvaffaqiyatsiz");
         } finally {
             setGroupSaving(false);
         }
@@ -181,23 +178,23 @@ export default function ModifiersDrawer({
             const values = await optionForm.validateFields();
             setOptionSaving(true);
             await MenuAPI.createOption(activeGroup._id, values);
-            message.success("Option created");
+            message.success("Opsiya yaratildi");
             setOptionModalOpen(false);
             setActiveGroup(null);
             optionForm.resetFields();
             loadGroups();
         } catch (e: any) {
             if (e?.errorFields) return;
-            message.error(e?.response?.data?.message ?? "Create failed");
+            message.error(e?.response?.data?.message ?? "Yaratish muvaffaqiyatsiz");
         } finally {
             setOptionSaving(false);
         }
     };
 
     return (
-        <Drawer open={open} onClose={onClose} title="Modifiers" size="large">
+        <Drawer open={open} onClose={onClose} title="Modifikatorlar" size="large">
             <Flex vertical gap="middle" style={{ width: "100%" }}>
-                <Typography.Text type="secondary">Item</Typography.Text>
+                <Typography.Text type="secondary">Mahsulot</Typography.Text>
                 <Typography.Title level={4} style={{ margin: 0 }}>
                     {item?.name ?? "-"}
                 </Typography.Title>
@@ -210,10 +207,10 @@ export default function ModifiersDrawer({
                             setGroupModalOpen(true);
                         }}
                     >
-                        Add group
+                        Guruh qo'shish
                     </Button>
                     <Button onClick={loadGroups} loading={loading}>
-                        Refresh
+                        Yangilash
                     </Button>
                 </Space>
 
@@ -238,32 +235,30 @@ export default function ModifiersDrawer({
                 />
             </Flex>
 
-            {/* Create group modal */}
             <Modal
-                title="Add option group"
+                title="Opsiya guruhi qo'shish"
                 open={groupModalOpen}
                 onCancel={() => setGroupModalOpen(false)}
                 onOk={createGroup}
                 confirmLoading={groupSaving}
             >
                 <Form form={groupForm} layout="vertical">
-                    <Form.Item name="name" label="Name" rules={[{ required: true }]}>
-                        <Input placeholder='e.g., "Size"' />
+                    <Form.Item name="name" label="Nomi" rules={[{ required: true }]}>
+                        <Input placeholder='Masalan, "Hajmi"' />
                     </Form.Item>
                     <Space style={{ display: "flex" }} size="middle">
-                        <Form.Item name="min_select" label="Min select" style={{ flex: 1 }}>
+                        <Form.Item name="min_select" label="Min tanlash" style={{ flex: 1 }}>
                             <InputNumber min={0} style={{ width: "100%" }} />
                         </Form.Item>
-                        <Form.Item name="max_select" label="Max select" style={{ flex: 1 }}>
+                        <Form.Item name="max_select" label="Maks tanlash" style={{ flex: 1 }}>
                             <InputNumber min={1} style={{ width: "100%" }} />
                         </Form.Item>
                     </Space>
                 </Form>
             </Modal>
 
-            {/* Create option modal */}
             <Modal
-                title={`Add option${activeGroup?.name ? ` to "${activeGroup.name}"` : ""}`}
+                title={`Opsiya qo'shish${activeGroup?.name ? ` "${activeGroup.name}" ga` : ""}`}
                 open={optionModalOpen}
                 onCancel={() => {
                     setOptionModalOpen(false);
@@ -273,13 +268,13 @@ export default function ModifiersDrawer({
                 confirmLoading={optionSaving}
             >
                 <Form form={optionForm} layout="vertical" initialValues={{ is_available: true, price_delta: 0 }}>
-                    <Form.Item name="name" label="Name" rules={[{ required: true }]}>
-                        <Input placeholder='e.g., "Large"' />
+                    <Form.Item name="name" label="Nomi" rules={[{ required: true }]}>
+                        <Input placeholder='Masalan, "Katta"' />
                     </Form.Item>
-                    <Form.Item name="price_delta" label="Price delta (cents)">
+                    <Form.Item name="price_delta" label="Narx farqi (tiyin)">
                         <InputNumber style={{ width: "100%" }} />
                     </Form.Item>
-                    <Form.Item name="is_available" label="Available" valuePropName="checked">
+                    <Form.Item name="is_available" label="Mavjud" valuePropName="checked">
                         <Switch />
                     </Form.Item>
                 </Form>

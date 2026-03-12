@@ -48,7 +48,7 @@ export default function RestaurantsPage() {
             setData(res.data.restaurants ?? []);
             setTotal(res.data.meta?.total ?? (res.data.restaurants?.length ?? 0));
         } catch (e: any) {
-            msg.error(e?.response?.data?.message ?? "Failed to load restaurants");
+            msg.error(e?.response?.data?.message ?? "Restoranlarni yuklashda xatolik");
         } finally {
             setLoading(false);
         }
@@ -60,20 +60,20 @@ export default function RestaurantsPage() {
     }, [page, pageSize]);
 
     const columns: ColumnsType<Restaurant> = [
-        { title: "Name", dataIndex: "name" },
-        { title: "Phone", dataIndex: "phone", width: 140 },
+        { title: "Nomi", dataIndex: "name" },
+        { title: "Telefon", dataIndex: "phone", width: 140 },
         {
-            title: "City",
+            title: "Shahar",
             width: 180,
             render: (_, r) => `${r.address?.city ?? ""}, ${r.address?.region ?? ""}`,
         },
-        { title: "Open", dataIndex: "is_open", width: 90, render: (v) => (v ? "Yes" : "No") },
+        { title: "Ochiq", dataIndex: "is_open", width: 90, render: (v) => (v ? "Ha" : "Yo'q") },
         {
             title: "",
             width: 100,
             render: (_, r) => (
                 <Button type="link" onClick={() => nav(`/app/restaurants/${r._id}`)}>
-                    Manage
+                    Boshqarish
                 </Button>
             ),
         },
@@ -105,11 +105,9 @@ export default function RestaurantsPage() {
             const fd = buildRestaurantFormData(values, { logoFile, bannerFile, galleryFiles });
 
             await api.post(`/restaurants`, fd);
-            message.success("Created");
-            // navigate away or reset
-            // form.resetFields(); setLogoFileList([]); ...
+            message.success("Yaratildi");
         } catch (e: any) {
-            message.error(e?.response?.data?.message ?? "Create failed");
+            message.error(e?.response?.data?.message ?? "Yaratish muvaffaqiyatsiz");
         } finally {
             setSaving(false);
         }
@@ -122,12 +120,12 @@ export default function RestaurantsPage() {
 
             <Space style={{ width: "100%", justifyContent: "space-between" }}>
                 <Typography.Title level={2} style={{ margin: 0 }}>
-                    Restaurants
+                    Restoranlar
                 </Typography.Title>
 
                 <Space>
                     <Input.Search
-                        placeholder="Search name / phone / city..."
+                        placeholder="Nom / telefon / shahar qidirish..."
                         allowClear
                         value={q}
                         onChange={(e) => setQ(e.target.value)}
@@ -138,10 +136,10 @@ export default function RestaurantsPage() {
                         style={{ width: 320 }}
                     />
                     <Button onClick={load} loading={loading}>
-                        Refresh
+                        Yangilash
                     </Button>
                     <Button type="primary" onClick={() => setOpen(true)}>
-                        Create
+                        Yaratish
                     </Button>
                 </Space>
             </Space>
@@ -149,7 +147,7 @@ export default function RestaurantsPage() {
             <Table<Restaurant> rowKey="_id" loading={loading} dataSource={data} columns={columns} pagination={pagination} />
 
             <Modal
-                title="Create Restaurant"
+                title="Restoran yaratish"
                 open={open}
                 onCancel={() => {
                     setOpen(false);
@@ -158,14 +156,13 @@ export default function RestaurantsPage() {
                     setBannerFileList([]);
                     setGalleryFileList([]);
                 }}
-                // onOk={onF}
-                okText="Create"
+                okText="Yaratish"
                 confirmLoading={creating}
                 width={900}
             >
                 <RestaurantForm
                     form={form}
-                    title="Create restaurant"
+                    title="Restoran yaratish"
                     showStatusField={true}
                     logoFileList={logoFileList}
                     setLogoFileList={setLogoFileList}
@@ -176,7 +173,7 @@ export default function RestaurantsPage() {
                     onFinish={onFinish}
                     footer={
                         <Button type="primary" htmlType="submit" loading={saving}>
-                            Create
+                            Yaratish
                         </Button>
                     }
                 />

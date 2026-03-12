@@ -26,7 +26,7 @@ type Item = {
     categoryId?: string | null;
     name: string;
     description?: string | null;
-    price: number; // cents
+    price: number;
     is_available: boolean;
     image_url?: string | null;
     sort_order: number;
@@ -42,13 +42,11 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
 
     const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
 
-    // create/edit modal
     const [open, setOpen] = useState(false);
     const [editing, setEditing] = useState<Item | null>(null);
     const [saving, setSaving] = useState(false);
     const [form] = Form.useForm<Partial<Item>>();
 
-    // modifiers drawer
     const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
     const categoryOptions = useMemo(
@@ -69,7 +67,7 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
             });
             setItems(res.data.items ?? []);
         } catch (e: any) {
-            message.error(e?.response?.data?.message ?? "Failed to load items");
+            message.error(e?.response?.data?.message ?? "Mahsulotlarni yuklashda xatolik");
         } finally {
             setLoading(false);
         }
@@ -85,25 +83,25 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
     }, [restaurantId, categoryFilter]);
 
     const columns: ColumnsType<Item> = [
-        { title: "Name", dataIndex: "name" },
+        { title: "Nomi", dataIndex: "name" },
         {
-            title: "Category",
+            title: "Kategoriya",
             dataIndex: "categoryId",
             width: 180,
             render: (v) => {
-                if (!v) return <Tag>Uncategorized</Tag>;
+                if (!v) return <Tag>Kategoriyasiz</Tag>;
                 const c = categories.find((x) => x._id === v);
                 return c ? c.name : v;
             },
         },
         {
-            title: "Price",
+            title: "Narx",
             dataIndex: "price",
             width: 120,
             render: (v: number) => v,
         },
         {
-            title: "Available",
+            title: "Mavjud",
             dataIndex: "is_available",
             width: 120,
             render: (v: boolean, row) => (
@@ -111,21 +109,20 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
                     checked={v}
                     onChange={async (checked) => {
                         try {
-                            // await MenuAPI.updateItem(row._id, { is_available: checked });
                             setItems((prev) => prev.map((it) => (it._id === row._id ? { ...it, is_available: checked } : it)));
                         } catch (e: any) {
-                            message.error(e?.response?.data?.message ?? "Update failed");
+                            message.error(e?.response?.data?.message ?? "Yangilash muvaffaqiyatsiz");
                         }
                     }}
                 />
             ),
         },
         {
-            title: "Modifiers",
+            title: "Modifikatorlar",
             width: 110,
             render: (_, r) => (
                 <Button type="link" onClick={() => setSelectedItem(r)}>
-                    Manage
+                    Boshqarish
                 </Button>
             ),
         },
@@ -150,25 +147,25 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
                             setOpen(true);
                         }}
                     >
-                        Edit
+                        Tahrirlash
                     </Button>
 
                     <Popconfirm
-                        title="Delete item?"
-                        okText="Delete"
+                        title="Mahsulotni o'chirasizmi?"
+                        okText="O'chirish"
                         okButtonProps={{ danger: true }}
                         onConfirm={async () => {
                             try {
                                 await MenuAPI.deleteItem(row._id);
-                                message.success("Deleted");
+                                message.success("O'chirildi");
                                 loadItems();
                             } catch (e: any) {
-                                message.error(e?.response?.data?.message ?? "Delete failed");
+                                message.error(e?.response?.data?.message ?? "O'chirish muvaffaqiyatsiz");
                             }
                         }}
                     >
                         <Button type="link" danger>
-                            Delete
+                            O'chirish
                         </Button>
                     </Popconfirm>
                 </Space>
@@ -183,7 +180,6 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
 
             const fd = new FormData();
 
-            // append normal fields
             if (values.categoryId !== undefined) fd.append("categoryId", values.categoryId ?? "");
             fd.append("name", values.name ?? "");
             fd.append("description", values.description ?? "");
@@ -191,15 +187,14 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
             fd.append("sort_order", String(values.sort_order ?? 0));
             fd.append("is_available", String(!!values.is_available));
 
-            // append file (ONLY if chosen)
-            if (imageFile) fd.append("image", imageFile); // key name must match backend: "image"
+            if (imageFile) fd.append("image", imageFile);
 
             if (editing) {
                 await MenuAPI.updateItem(editing._id, fd);
-                message.success("Updated");
+                message.success("Yangilandi");
             } else {
                 await MenuAPI.createItem(restaurantId, fd);
-                message.success("Created");
+                message.success("Yaratildi");
             }
 
             setOpen(false);
@@ -210,7 +205,7 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
             loadItems();
         } catch (e: any) {
             if (e?.errorFields) return;
-            message.error(e?.response?.data?.message ?? "Save failed");
+            message.error(e?.response?.data?.message ?? "Saqlash muvaffaqiyatsiz");
         } finally {
             setSaving(false);
         }
@@ -221,7 +216,7 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
             <Space style={{ marginBottom: 12 }} wrap>
                 <Select
                     allowClear
-                    placeholder="Filter by category"
+                    placeholder="Kategoriya bo'yicha"
                     style={{ width: 260 }}
                     value={categoryFilter}
                     onChange={(v) => setCategoryFilter(v)}
@@ -236,18 +231,18 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
                         setOpen(true);
                     }}
                 >
-                    Add Item
+                    Mahsulot qo'shish
                 </Button>
 
                 <Button onClick={loadItems} loading={loading}>
-                    Refresh
+                    Yangilash
                 </Button>
             </Space>
 
             <Table<Item> rowKey="_id" loading={loading} dataSource={items} columns={columns} pagination={false} />
 
             <Modal
-                title={editing ? "Edit Item" : "Add Item"}
+                title={editing ? "Mahsulotni tahrirlash" : "Mahsulot qo'shish"}
                 open={open}
                 onCancel={() => {
                     setOpen(false);
@@ -259,23 +254,23 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
                 confirmLoading={saving}
             >
                 <Form form={form} layout="vertical" initialValues={{ is_available: true, sort_order: 0 }}>
-                    <Form.Item name="categoryId" label="Category">
+                    <Form.Item name="categoryId" label="Kategoriya">
                         <Select allowClear options={categoryOptions} />
                     </Form.Item>
 
-                    <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+                    <Form.Item name="name" label="Nomi" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
 
-                    <Form.Item name="description" label="Description">
+                    <Form.Item name="description" label="Tavsif">
                         <Input.TextArea rows={3} />
                     </Form.Item>
 
-                    <Form.Item name="price" label="Price (cents)" rules={[{ required: true }]}>
+                    <Form.Item name="price" label="Narx" rules={[{ required: true }]}>
                         <InputNumber min={0} style={{ width: "100%" }} />
                     </Form.Item>
 
-                    <Form.Item label="Image">
+                    <Form.Item label="Rasm">
                         <Upload
                             accept="image/*"
                             maxCount={1}
@@ -291,22 +286,22 @@ export default function ItemsTab({ restaurantId }: { restaurantId: string }) {
                                         originFileObj: file,
                                     },
                                 ]);
-                                return false; // prevent auto upload
+                                return false;
                             }}
                             onRemove={() => {
                                 setImageFile(null);
                                 setFileList([]);
                             }}
                         >
-                            <Button>Upload image</Button>
+                            <Button>Rasm yuklash</Button>
                         </Upload>
                     </Form.Item>
 
-                    <Form.Item name="sort_order" label="Sort order">
+                    <Form.Item name="sort_order" label="Tartib raqami">
                         <InputNumber min={0} style={{ width: "100%" }} />
                     </Form.Item>
 
-                    <Form.Item name="is_available" label="Available" valuePropName="checked">
+                    <Form.Item name="is_available" label="Mavjud" valuePropName="checked">
                         <Switch />
                     </Form.Item>
                 </Form>

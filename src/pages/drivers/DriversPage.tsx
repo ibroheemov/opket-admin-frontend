@@ -24,15 +24,12 @@ export default function DriversPage() {
     const [drivers, setDrivers] = useState<Driver[]>([]);
     const [total, setTotal] = useState(0);
 
-    // table state
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
-    // filters
     const [status, setStatus] = useState<Driver["status"] | undefined>();
     const [q, setQ] = useState("");
 
-    // edit modal
     const [open, setOpen] = useState(false);
     const [editing, setEditing] = useState<Driver | null>(null);
     const [form] = Form.useForm<Partial<Driver>>();
@@ -51,7 +48,7 @@ export default function DriversPage() {
             setDrivers(res.drivers);
             setTotal(res.meta.total);
         } catch (e: any) {
-            message.error(e?.response?.data?.message ?? "Failed to load drivers");
+            message.error(e?.response?.data?.message ?? "Haydovchilarni yuklashda xatolik");
         } finally {
             setLoading(false);
         }
@@ -65,7 +62,7 @@ export default function DriversPage() {
     const columns: ColumnsType<Driver> = useMemo(
         () => [
             {
-                title: "Name",
+                title: "Ism",
                 dataIndex: "name",
                 render: (_, d) => (
                     <Flex vertical gap={0}>
@@ -76,30 +73,30 @@ export default function DriversPage() {
                     </Flex>
                 ),
             },
-            { title: "Phone", dataIndex: "phone", width: 140 },
-            { title: "Ilova Versiyasi", dataIndex: "appVersion", width: 140 },
+            { title: "Telefon", dataIndex: "phone", width: 140 },
+            { title: "Ilova versiyasi", dataIndex: "appVersion", width: 140 },
             {
-                title: "Vehicle",
+                title: "Mashina",
                 dataIndex: "vehicle",
                 ellipsis: true,
             },
             {
-                title: "Status",
+                title: "Holat",
                 dataIndex: "status",
                 width: 120,
                 render: (v: Driver["status"]) => <Tag>{v}</Tag>,
             },
             {
-                title: "Balance",
+                title: "Balans",
                 dataIndex: "balance",
                 width: 140,
                 render: (v: number) => <Typography.Text>{v}</Typography.Text>,
             },
             {
-                title: "Offers",
+                title: "Takliflar",
                 dataIndex: "canReceiveOffers",
                 width: 110,
-                render: (v: boolean) => (v ? <Tag>Yes</Tag> : <Tag>No</Tag>),
+                render: (v: boolean) => (v ? <Tag>Ha</Tag> : <Tag>Yo'q</Tag>),
             },
             {
                 title: "",
@@ -128,7 +125,7 @@ export default function DriversPage() {
                             setOpen(true);
                         }}
                     >
-                        Edit
+                        Tahrirlash
                     </Button>
                 ),
             },
@@ -156,27 +153,26 @@ export default function DriversPage() {
 
         try {
             const res = await DriverAPI.update(editing._id, values);
-            message.success("Driver updated");
+            message.success("Haydovchi yangilandi");
             setOpen(false);
             setEditing(null);
             fetchDrivers();
             return res;
         } catch (e: any) {
-            message.error(e?.response?.data?.message ?? "Update failed");
+            message.error(e?.response?.data?.message ?? "Yangilash muvaffaqiyatsiz");
         }
     };
 
     return (
         <Flex vertical gap="middle" style={{ width: "100%" }}>
             <Typography.Title level={2} style={{ margin: 0 }}>
-                Drivers
+                Haydovchilar
             </Typography.Title>
 
-            {/* Filters */}
             <Space wrap>
                 <Select
                     allowClear
-                    placeholder="Status"
+                    placeholder="Holat"
                     style={{ width: 160 }}
                     value={status}
                     onChange={(v) => {
@@ -188,7 +184,7 @@ export default function DriversPage() {
 
                 <Input.Search
                     allowClear
-                    placeholder="Search name / phone / car number..."
+                    placeholder="Ism / telefon / mashina raqami..."
                     style={{ width: 320 }}
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
@@ -206,11 +202,11 @@ export default function DriversPage() {
                         fetchDrivers();
                     }}
                 >
-                    Reset
+                    Tozalash
                 </Button>
 
                 <Button onClick={fetchDrivers} loading={loading}>
-                    Refresh
+                    Yangilash
                 </Button>
             </Space>
 
@@ -223,72 +219,72 @@ export default function DriversPage() {
             />
 
             <Modal
-                title="Edit Driver"
+                title="Haydovchini tahrirlash"
                 open={open}
                 onCancel={() => {
                     setOpen(false);
                     setEditing(null);
                 }}
                 onOk={save}
-                okText="Save"
+                okText="Saqlash"
             >
                 <Form layout="vertical" form={form}>
                     <Space style={{ display: "flex" }} size="middle">
-                        <Form.Item label="Firstname" name="firstname" style={{ flex: 1 }}>
+                        <Form.Item label="Ism" name="firstname" style={{ flex: 1 }}>
                             <Input />
                         </Form.Item>
-                        <Form.Item label="Lastname" name="lastname" style={{ flex: 1 }}>
+                        <Form.Item label="Familiya" name="lastname" style={{ flex: 1 }}>
                             <Input />
                         </Form.Item>
                     </Space>
 
-                    <Form.Item label="Display name" name="name">
+                    <Form.Item label="Ko'rsatiladigan ism" name="name">
                         <Input />
                     </Form.Item>
 
                     <Space style={{ display: "flex" }} size="middle">
-                        <Form.Item label="Phone" name="phone" style={{ flex: 1 }}>
+                        <Form.Item label="Telefon" name="phone" style={{ flex: 1 }}>
                             <Input />
                         </Form.Item>
-                        <Form.Item label="Balance" name="balance" style={{ flex: 1 }}>
+                        <Form.Item label="Balans" name="balance" style={{ flex: 1 }}>
                             <InputNumber style={{ width: "100%" }} />
                         </Form.Item>
                     </Space>
 
                     <Space style={{ display: "flex" }} size="middle">
-                        <Form.Item label="Car model" name="carModel" style={{ flex: 1 }}>
+                        <Form.Item label="Mashina modeli" name="carModel" style={{ flex: 1 }}>
                             <Input />
                         </Form.Item>
-                        <Form.Item label="Car color" name="carColor" style={{ flex: 1 }}>
+                        <Form.Item label="Mashina rangi" name="carColor" style={{ flex: 1 }}>
                             <Input />
                         </Form.Item>
                     </Space>
 
                     <Space style={{ display: "flex" }} size="middle">
-                        <Form.Item label="Car number" name="carNumber" style={{ flex: 1 }}>
+                        <Form.Item label="Mashina raqami" name="carNumber" style={{ flex: 1 }}>
                             <Input />
                         </Form.Item>
-                        <Form.Item label="Region code" name="regionCode" style={{ flex: 1 }}>
+                        <Form.Item label="Viloyat kodi" name="regionCode" style={{ flex: 1 }}>
                             <Input />
                         </Form.Item>
                     </Space>
 
-                    <Form.Item label="Vehicle" name="vehicle">
+                    <Form.Item label="Mashina" name="vehicle">
                         <Input />
                     </Form.Item>
 
                     <Space style={{ display: "flex", justifyContent: "space-between" }}>
-                        <Form.Item label="Status" name="status" style={{ width: 200 }}>
+                        <Form.Item label="Holat" name="status" style={{ width: 200 }}>
                             <Select options={STATUS_OPTIONS.map((s) => ({ label: s, value: s }))} />
                         </Form.Item>
 
-                        <Form.Item label="Can receive offers" name="canReceiveOffers" valuePropName="checked">
+                        <Form.Item label="Taklif qabul qilish" name="canReceiveOffers" valuePropName="checked">
                             <Switch />
                         </Form.Item>
                     </Space>
 
-                    <Form.Item label="Enabled options" name="enabledOptions">
-                        <Select mode="tags" placeholder="Add options..." />
+                    <Form.Item label="Yoqilgan opsiyalar" name="enabledOptions">
+                        <Select mode="tags" placeholder="Opsiya qo'shing..." />
                     </Form.Item>
                 </Form>
             </Modal>

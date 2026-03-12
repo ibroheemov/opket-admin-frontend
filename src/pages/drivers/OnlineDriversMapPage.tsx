@@ -17,13 +17,13 @@ const MAP_CONTAINER: React.CSSProperties = {
     borderRadius: 8,
 };
 
-const DEFAULT_CENTER = { lat: 39.65, lng: 66.96 };
+const DEFAULT_CENTER = { lat: 41.10, lng: 71.15 };
 const DEFAULT_ZOOM = 12;
 
 function driverLabel(d: OnlineDriver): string {
     if (typeof d.driverId === "object" && d.driverId !== null) {
         const driver = d.driverId as Driver;
-        return driver.name || `${driver.firstname ?? ""} ${driver.lastname ?? ""}`.trim() || driver.phone || "Driver";
+        return driver.name || `${driver.firstname ?? ""} ${driver.lastname ?? ""}`.trim() || driver.phone || "Haydovchi";
     }
     return String(d.driverId).slice(-6);
 }

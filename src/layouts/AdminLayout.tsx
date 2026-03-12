@@ -28,7 +28,7 @@ export default function AdminLayout() {
         <Layout style={{ minHeight: "100vh" }}>
             <Sider collapsible>
                 <div style={{ height: 48, margin: 16, color: "white", fontWeight: 700 }}>
-                    Admin Panel
+                    Boshqaruv Paneli
                 </div>
                 <Menu
                     theme="dark"
@@ -38,7 +38,7 @@ export default function AdminLayout() {
                         {
                             key: "dashboard",
                             icon: <DashboardOutlined />,
-                            label: <Link to="/app/dashboard">Dashboard</Link>,
+                            label: <Link to="/app/dashboard">Bosh sahifa</Link>,
                         },
                         {
                             key: "taxi",
@@ -98,7 +98,7 @@ export default function AdminLayout() {
                     }}
                 >
                     <Button icon={<LogoutOutlined />} onClick={logout}>
-                        Logout
+                        Chiqish
                     </Button>
                 </Header>
 
