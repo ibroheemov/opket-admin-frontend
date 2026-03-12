@@ -18,6 +18,7 @@ export function buildRestaurantFormData(values: RestaurantFormValues, files: Res
     fd.append("name", values.name);
     fd.append("description", values.description ?? "");
     fd.append("phone", values.phone);
+    fd.append("rating_avg", String(values.rating_avg));
 
     fd.append("is_open", String(!!values.is_open));
     fd.append("accepting_orders", String(!!values.accepting_orders));

@@ -43,7 +43,7 @@ export default function RestaurantsPage() {
         setLoading(true);
         try {
             const res = await api.get<ListResponse>("/restaurants", {
-                params: { page, pageSize, q: q.trim() || undefined },
+                params: { page, pageSize, q: q.trim() || undefined, status: "ALL" },
             });
             setData(res.data.restaurants ?? []);
             setTotal(res.data.meta?.total ?? (res.data.restaurants?.length ?? 0));

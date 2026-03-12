@@ -22,6 +22,8 @@ export function restaurantToFormValues(r: Restaurant): Partial<RestaurantFormVal
         lng: r.location?.coordinates?.[0],
 
         cuisine_types: r.cuisine_types ?? [],
+        cuisineTypeId: r.cuisineTypeId ?? undefined,
+
         tags: r.tags ?? [],
         price_tier: r.price_tier ?? undefined,
 
@@ -50,5 +52,7 @@ export function restaurantToFormValues(r: Restaurant): Partial<RestaurantFormVal
 
         currency: r.currency ?? "UZS",
         commission_percent: r.commission_percent ?? 0,
+
+        rating_avg: r.rating_avg ?? 0.0
     };
 }

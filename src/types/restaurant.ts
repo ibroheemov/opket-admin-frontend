@@ -30,6 +30,8 @@ export type Restaurant = {
     gallery_urls?: string[];
 
     cuisine_types: string[];
+    cuisineTypeId: string | null;
+
     tags?: string[];
     price_tier?: PriceTier | null;
 
@@ -60,6 +62,7 @@ export type Restaurant = {
 
     currency: string;
     commission_percent: number;
+    rating_avg: number;
 
     createdAt?: string;
     updatedAt?: string;

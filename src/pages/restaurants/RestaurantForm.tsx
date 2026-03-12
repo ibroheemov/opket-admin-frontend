@@ -80,6 +80,8 @@ export type RestaurantFormValues = {
 
     currency: string;
     commission_percent: number;
+
+    rating_avg: number;
 };
 
 type Props = {
@@ -147,6 +149,7 @@ export function RestaurantForm({
             delivery_fee_base: 0,
             currency: "UZS",
             commission_percent: 0,
+            rating_avg: 0,
         }),
         []
     );
@@ -400,6 +403,15 @@ export function RestaurantForm({
                             rules={[{ type: "number", min: 0, max: 100, message: "0..100" }]}
                         >
                             <InputNumber style={{ width: "100%" }} min={0} max={100} step={0.5} />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} md={8}>
+                        <Form.Item
+                            name="rating_avg"
+                            label="Rating"
+                            rules={[{ type: "number", min: 0, max: 5, message: "0..5" }]}
+                        >
+                            <InputNumber style={{ width: "100%" }} min={0} max={5} step={0.1} />
                         </Form.Item>
                     </Col>
                 </Row>
