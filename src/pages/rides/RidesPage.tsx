@@ -48,11 +48,21 @@ export const rideStatusColor: Record<RideStatus, TagProps["color"]> = {
     cancelled: "red",
 };
 
+export const rideStatusTranslated: Record<RideStatus, TagProps["color"]> = {
+    pending: "Kutilmoqda",
+    offered: "Taklif qilindi",
+    accepted: "Qabul qilindi",
+    arrived: "Yetib keldi",
+    started: "Boshlandi",
+    completed: "Bajarildi",
+    cancelled: "Bekor qilindi",
+};
+
 const TYPE_OPTIONS: Ride["type"][] = ["app", "bot"];
 const RIDE_TYPE_OPTIONS: Ride["rideType"][] = ["standard", "premium", "comfort"];
 
 function statusTag(status: RideStatus) {
-    return <Tag color={rideStatusColor[status]}>{status}</Tag>;
+    return <Tag color={rideStatusColor[status]}>{rideStatusTranslated[status]}</Tag>;
 }
 
 export default function RidesPage() {
@@ -203,7 +213,7 @@ export default function RidesPage() {
                         setStatus(v);
                         setPage(1);
                     }}
-                    options={STATUS_OPTIONS.map((s) => ({ label: s, value: s }))}
+                    options={STATUS_OPTIONS.map((s) => ({ label: rideStatusTranslated[s], value: s }))}
                 />
 
                 <Select
