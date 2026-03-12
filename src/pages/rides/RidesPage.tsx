@@ -15,7 +15,7 @@ import {
 } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import dayjs from "dayjs";
-import { type Ride, RideAPI, type StatusBy } from "../../api/endpoints";
+import { type Ride, RideAPI } from "../../api/endpoints";
 
 const { RangePicker } = DatePicker;
 
