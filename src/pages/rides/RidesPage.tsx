@@ -15,7 +15,7 @@ import {
 } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import dayjs from "dayjs";
-import { type Ride, RideAPI } from "../../api/endpoints";
+import { type Ride, RideAPI, type StatusBy } from "../../api/endpoints";
 
 const { RangePicker } = DatePicker;
 
@@ -56,6 +56,13 @@ export const rideStatusTranslated: Record<RideStatus, TagProps["color"]> = {
     started: "Boshlandi",
     completed: "Bajarildi",
     cancelled: "Bekor qilindi",
+};
+
+export const statusByTranslated: Record<string, string> = {
+    system: "Tizim",
+    user: "Yo'lovchi",
+    driver: "Haydovchi",
+    admin: "Admin",
 };
 
 const TYPE_OPTIONS: Ride["type"][] = ["app", "bot"];
@@ -347,7 +354,7 @@ export default function RidesPage() {
                                     title: "Kim tomonidan",
                                     dataIndex: "by",
                                     width: 100,
-                                    render: (v: string) => v ?? "-",
+                                    render: (v: string) => statusByTranslated[v] ?? "-",
                                 },
                                 {
                                     title: "Haydovchi",
