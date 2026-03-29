@@ -10,6 +10,7 @@ import RestaurantDetailPage from "../pages/restaurants/RestaurantDetailPage";
 import SettingsPage from "../pages/food/settings/SettingsPage";
 import RestaurantOwnersPage from "../pages/users/RestaurantOwnersPage";
 import OnlineDriversMapPage from "../pages/drivers/OnlineDriversMapPage";
+import TaxiSettingsPage from "../pages/taxi/settings/TaxiSettingsPage";
 
 export function AppRouter() {
     return (
@@ -25,6 +26,7 @@ export function AppRouter() {
                     <Route path="taxi/orders" element={<RidesPage />} />
                     <Route path="taxi/drivers" element={<DriversPage />} />
                     <Route path="taxi/map" element={<OnlineDriversMapPage />} />
+                    <Route path="taxi/settings" element={<TaxiSettingsPage />} />
                     <Route path="food/restaurants" element={<RestaurantsPage />} />
                     <Route path="food/settings" element={<SettingsPage />} />
                     <Route path="food/owners" element={<RestaurantOwnersPage />} />
