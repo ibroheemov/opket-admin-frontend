@@ -12,10 +12,12 @@ import {
     Table,
     Tag,
     Typography,
+    Upload,
     message,
 } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import { type Driver, DriverAPI } from "../../api/endpoints";
+import type { UploadFile } from "antd/es/upload/interface";
+import { type Driver, DriverAPI, type RegisterDriverPayload } from "../../api/endpoints";
 
 const STATUS_OPTIONS: Driver["status"][] = ["online", "offline"];
 
@@ -33,6 +35,12 @@ export default function DriversPage() {
     const [open, setOpen] = useState(false);
     const [editing, setEditing] = useState<Driver | null>(null);
     const [form] = Form.useForm<Partial<Driver>>();
+
+    const [registerOpen, setRegisterOpen] = useState(false);
+    const [registerSaving, setRegisterSaving] = useState(false);
+    const [registerForm] = Form.useForm<RegisterDriverPayload>();
+    const [licenseFile, setLicenseFile] = useState<File | null>(null);
+    const [licenseFileList, setLicenseFileList] = useState<UploadFile[]>([]);
 
     const fetchDrivers = async () => {
         setLoading(true);
@@ -163,6 +171,38 @@ export default function DriversPage() {
         }
     };
 
+    const submitRegister = async () => {
+        try {
+            const values = await registerForm.validateFields();
+            setRegisterSaving(true);
+
+            const payload: RegisterDriverPayload = {
+                firstname: values.firstname.trim(),
+                lastname: values.lastname.trim(),
+                car_model: values.car_model.trim(),
+                car_color: values.car_color.trim(),
+                car_number: values.car_number.trim(),
+                region_code: values.region_code.trim(),
+                phone: values.phone.trim(),
+                password: values.password,
+                driver_license: licenseFile ?? undefined,
+            };
+
+            const res = await DriverAPI.register(payload);
+            message.success(res.message ?? "Haydovchi ro'yxatdan o'tkazildi");
+            setRegisterOpen(false);
+            registerForm.resetFields();
+            setLicenseFile(null);
+            setLicenseFileList([]);
+            fetchDrivers();
+        } catch (e: any) {
+            if (e?.errorFields) return;
+            message.error(e?.response?.data?.message ?? "Ro'yxatdan o'tkazish muvaffaqiyatsiz");
+        } finally {
+            setRegisterSaving(false);
+        }
+    };
+
     return (
         <Flex vertical gap="middle" style={{ width: "100%" }}>
             <Typography.Title level={2} style={{ margin: 0 }}>
@@ -170,6 +210,18 @@ export default function DriversPage() {
             </Typography.Title>
 
             <Space wrap>
+                <Button
+                    type="primary"
+                    onClick={() => {
+                        registerForm.resetFields();
+                        setLicenseFile(null);
+                        setLicenseFileList([]);
+                        setRegisterOpen(true);
+                    }}
+                >
+                    Haydovchi qo'shish
+                </Button>
+
                 <Select
                     allowClear
                     placeholder="Holat"
@@ -285,6 +337,124 @@ export default function DriversPage() {
 
                     <Form.Item label="Yoqilgan opsiyalar" name="enabledOptions">
                         <Select mode="tags" placeholder="Opsiya qo'shing..." />
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+            <Modal
+                title="Haydovchini ro'yxatdan o'tkazish"
+                open={registerOpen}
+                onCancel={() => {
+                    setRegisterOpen(false);
+                    registerForm.resetFields();
+                    setLicenseFile(null);
+                    setLicenseFileList([]);
+                }}
+                onOk={submitRegister}
+                okText="Yaratish"
+                confirmLoading={registerSaving}
+                destroyOnHidden
+            >
+                <Form layout="vertical" form={registerForm} style={{ marginTop: 16 }}>
+                    <Space style={{ display: "flex" }} size="middle">
+                        <Form.Item
+                            label="Ism"
+                            name="firstname"
+                            rules={[{ required: true, message: "Ismni kiriting" }]}
+                            style={{ flex: 1 }}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Familiya"
+                            name="lastname"
+                            rules={[{ required: true, message: "Familiyani kiriting" }]}
+                            style={{ flex: 1 }}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Space>
+
+                    <Space style={{ display: "flex" }} size="middle">
+                        <Form.Item
+                            label="Mashina modeli"
+                            name="car_model"
+                            rules={[{ required: true, message: "Modelni kiriting" }]}
+                            style={{ flex: 1 }}
+                        >
+                            <Input placeholder="Masalan: Cobalt" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Mashina rangi"
+                            name="car_color"
+                            rules={[{ required: true, message: "Rangni kiriting" }]}
+                            style={{ flex: 1 }}
+                        >
+                            <Input placeholder="Masalan: oq" />
+                        </Form.Item>
+                    </Space>
+
+                    <Space style={{ display: "flex" }} size="middle">
+                        <Form.Item
+                            label="Mashina raqami"
+                            name="car_number"
+                            rules={[{ required: true, message: "Raqamni kiriting" }]}
+                            style={{ flex: 1 }}
+                        >
+                            <Input placeholder="Masalan: 01A123BC" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Viloyat kodi"
+                            name="region_code"
+                            rules={[{ required: true, message: "Viloyat kodini kiriting" }]}
+                            style={{ flex: 1 }}
+                        >
+                            <Input placeholder="Masalan: 01" />
+                        </Form.Item>
+                    </Space>
+
+                    <Space style={{ display: "flex" }} size="middle">
+                        <Form.Item
+                            label="Telefon"
+                            name="phone"
+                            rules={[{ required: true, message: "Telefonni kiriting" }]}
+                            style={{ flex: 1 }}
+                        >
+                            <Input placeholder="991234567" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Parol"
+                            name="password"
+                            rules={[{ required: true, message: "Parolni kiriting" }]}
+                            style={{ flex: 1 }}
+                        >
+                            <Input.Password />
+                        </Form.Item>
+                    </Space>
+
+                    <Form.Item label="Driver license (fayl)">
+                        <Upload
+                            fileList={licenseFileList}
+                            maxCount={1}
+                            beforeUpload={(file) => {
+                                setLicenseFile(file);
+                                setLicenseFileList([
+                                    {
+                                        uid: file.uid,
+                                        name: file.name,
+                                        status: "done",
+                                        originFileObj: file,
+                                    } as any,
+                                ]);
+                                return false;
+                            }}
+                            onRemove={() => {
+                                setLicenseFile(null);
+                                setLicenseFileList([]);
+                            }}
+                        >
+                            <Button>Fayl tanlash</Button>
+                        </Upload>
                     </Form.Item>
                 </Form>
             </Modal>

@@ -1,9 +1,16 @@
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
+const publicBaseURL = import.meta.env.VITE_PUBLIC_API_BASE_URL ?? baseURL;
 
 export const api = axios.create({
     baseURL,
+    timeout: 20000,
+});
+
+// Public endpoints (no admin auth header)
+export const publicApi = axios.create({
+    baseURL: publicBaseURL,
     timeout: 20000,
 });
 

@@ -1,4 +1,4 @@
-import { api } from "./client";
+import { api, publicApi } from "./client";
 
 export type Driver = {
     _id: string;
@@ -26,6 +26,33 @@ export type GetDriversResponse = {
     success: boolean;
     drivers: Driver[];
     meta: { page: number; pageSize: number; total: number; totalPages: number };
+};
+
+export type RegisterDriverPayload = {
+    firstname: string;
+    lastname: string;
+    car_model: string;
+    car_color: string;
+    car_number: string;
+    region_code: string;
+    phone: string;
+    password: string;
+    driver_license?: File;
+};
+
+export type RegisterDriverResponse = {
+    message: string;
+    driver: Driver & {
+        selfie?: { status: string };
+        driver_license?: { status: string };
+        passport?: { status: string };
+        blocked?: boolean;
+        hasPremiumCar?: boolean;
+        events?: unknown[];
+        __v?: number;
+    };
+    accessToken: string;
+    refreshToken: string;
 };
 
 export type LoginRequest = { email: string; password: string };
@@ -150,6 +177,21 @@ export const DriverAPI = {
     },
     update: async (id: string, payload: Partial<Driver>) => {
         const { data } = await api.patch<{ success: boolean; driver: Driver }>(`/drivers/${id}`, payload);
+        return data;
+    },
+    register: async (payload: RegisterDriverPayload) => {
+        const fd = new FormData();
+        fd.append("firstname", payload.firstname);
+        fd.append("lastname", payload.lastname);
+        fd.append("car_model", payload.car_model);
+        fd.append("car_color", payload.car_color);
+        fd.append("car_number", payload.car_number);
+        fd.append("region_code", payload.region_code);
+        fd.append("phone", payload.phone);
+        fd.append("password", payload.password);
+        if (payload.driver_license) fd.append("driver_license", payload.driver_license);
+
+        const { data } = await publicApi.post<RegisterDriverResponse>("/driver/register", fd);
         return data;
     },
 };
