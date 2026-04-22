@@ -1,5 +1,6 @@
 import { Tabs } from "antd";
 import RideOptionsTab from "./RideOptionsTab";
+import FareSettingsTab from "./FareSettingsTab";
 
 export default function TaxiSettingsPage() {
     return (
@@ -9,6 +10,11 @@ export default function TaxiSettingsPage() {
                     key: "ride-options",
                     label: "Sayohat variantlari",
                     children: <RideOptionsTab />,
+                },
+                {
+                    key: "fare-settings",
+                    label: "Tarif sozlamalari",
+                    children: <FareSettingsTab />,
                 },
             ]}
         />
