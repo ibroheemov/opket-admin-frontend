@@ -43,6 +43,7 @@ export default function RideOptionsTab() {
 
     const columns: ColumnsType<RideOption> = [
         { title: "Nomi", dataIndex: "title" },
+        { title: "Yo'lovchi uchun nomi", dataIndex: "title_for_passenger" },
         { title: "Option ID", dataIndex: "option_id" },
         {
             title: "Darhol",
@@ -92,6 +93,7 @@ export default function RideOptionsTab() {
         setEditing(row);
         form.setFieldsValue({
             title: row.title,
+            title_for_passenger: row.title_for_passenger,
             option_id: row.option_id,
             instant: row.instant,
             charge: row.charge,
@@ -105,6 +107,7 @@ export default function RideOptionsTab() {
             setSaving(true);
             const payload: RideOptionPayload = {
                 title: values.title.trim(),
+                title_for_passenger: values.title_for_passenger.trim(),
                 option_id: values.option_id.trim(),
                 instant: values.instant,
                 charge: Number(values.charge),
@@ -170,6 +173,9 @@ export default function RideOptionsTab() {
             >
                 <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
                     <Form.Item name="title" label="Nomi" rules={[{ required: true, message: "Nomini kiriting" }]}>
+                        <Input placeholder="Masalan: Comfort" />
+                    </Form.Item>
+                    <Form.Item name="title_for_passenger" label="Yo'lovchi uchun nomi" rules={[{ required: true, message: "Nomini kiriting" }]}>
                         <Input placeholder="Masalan: Comfort" />
                     </Form.Item>
                     <Form.Item

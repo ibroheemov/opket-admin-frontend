@@ -97,12 +97,6 @@ export default function RidesPage() {
                 render: (v) => statusTag(v),
             },
             {
-                title: "Ilova/Bot",
-                dataIndex: "type",
-                width: 100,
-                render: (v) => <Tag>{v}</Tag>,
-            },
-            {
                 title: "Telefon raqam",
                 dataIndex: "userPhoneNumber",
                 width: 120,
@@ -116,10 +110,10 @@ export default function RidesPage() {
             },
             {
                 title: "Haydovchi",
-                dataIndex: "driverId",
+                dataIndex: "driver",
                 width: 160,
                 render: (_, r) => {
-                    const d = r.driverId;
+                    const d = r.driver;
                     return d ? `${d.carModel} • ${d.carColor} • ${d.carNumber}` : "-";
                 },
             },
@@ -128,6 +122,12 @@ export default function RidesPage() {
                 dataIndex: "fare",
                 width: 110,
                 render: (v: number) => <Typography.Text>{v}</Typography.Text>,
+            },
+            {
+                title: "Masofa",
+                dataIndex: "distanceTraveled",
+                width: 170,
+                render: (v: number) => <Typography.Text>{v} km</Typography.Text>,
             },
             {
                 title: "Yaratilgan",

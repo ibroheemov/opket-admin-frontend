@@ -18,6 +18,7 @@ import {
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { UploadFile } from "antd/es/upload/interface";
 import { type Driver, DriverAPI, type RegisterDriverPayload } from "../../api/endpoints";
+import { Tariffs } from "./Tariffs";
 
 const STATUS_OPTIONS: Driver["status"][] = ["online", "offline"];
 
@@ -129,6 +130,7 @@ export default function DriversPage() {
                                 status: d.status,
                                 canReceiveOffers: d.canReceiveOffers,
                                 enabledOptions: d.enabledOptions,
+                                tariffs: d.tariffs,
                             });
                             setOpen(true);
                         }}
@@ -337,6 +339,11 @@ export default function DriversPage() {
 
                     <Form.Item label="Yoqilgan opsiyalar" name="enabledOptions">
                         <Select mode="tags" placeholder="Opsiya qo'shing..." />
+                    </Form.Item>
+                    <Form.Item label="Yoqilgan tariflar" name="tariffs">
+                        <Tariffs onChange={function (): void {
+
+                        }} />
                     </Form.Item>
                 </Form>
             </Modal>

@@ -6,6 +6,7 @@ import {
     Popconfirm,
     Select,
     Space,
+    Switch,
     Table,
     Tag,
     message,
@@ -36,6 +37,8 @@ const TYPE_OPTIONS: { value: FareType; label: string }[] = [
 
 const DEFAULTS: FarePayload = {
     type: "standard",
+    rating: 0,
+    isMandatory: false,
     baseFare: 0,
     perKm: 0,
     firstKm: 0,
@@ -88,6 +91,10 @@ export default function FareSettingsTab() {
         { title: "Kutish (daq.)", dataIndex: "minutesBeforeCharge", width: 130 },
         { title: "Eng qisqa masofa (km)", dataIndex: "smallestDistance", width: 170 },
         { title: "Eng qisqa masofa narxi", dataIndex: "smallestDistanceFare", width: 170 },
+        { title: "Majburiy", dataIndex: "isMandatory", width: 120, render: (v: boolean) => (v ? "Ha" : "Yo'q"), },
+        {
+            title: "Reyting", dataIndex: "rating", width: 120,
+        },
         {
             title: "",
             fixed: "right",
@@ -125,6 +132,7 @@ export default function FareSettingsTab() {
         setEditing(row);
         form.setFieldsValue({
             type: row.type,
+            isMandatory: row.isMandatory,
             baseFare: row.baseFare,
             perKm: row.perKm,
             firstKm: row.firstKm,
@@ -144,6 +152,8 @@ export default function FareSettingsTab() {
             setSaving(true);
             const payload: FarePayload = {
                 type: values.type,
+                rating: Number(values.rating),
+                isMandatory: values.isMandatory,
                 baseFare: Number(values.baseFare),
                 perKm: Number(values.perKm),
                 firstKm: Number(values.firstKm),
@@ -223,7 +233,9 @@ export default function FareSettingsTab() {
                     >
                         <Select options={TYPE_OPTIONS} placeholder="Turi tanlang" />
                     </Form.Item>
-
+                    <Form.Item name="isMandatory" label="Majburiy" valuePropName="checked" initialValue={true}>
+                        <Switch />
+                    </Form.Item>
                     <Space style={{ display: "flex" }} size="middle" align="start" wrap>
                         <Form.Item
                             name="baseFare"
@@ -296,6 +308,14 @@ export default function FareSettingsTab() {
                             rules={[{ required: true, message: "Kiriting" }]}
                         >
                             <InputNumber min={0} style={{ width: 200 }} />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="rating"
+                            label="Reyting"
+                            rules={[{ required: true, message: "Kiriting" }]}
+                        >
+                            <InputNumber min={0} style={{ width: 100 }} />
                         </Form.Item>
                     </Space>
                 </Form>

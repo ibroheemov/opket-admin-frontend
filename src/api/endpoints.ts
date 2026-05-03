@@ -18,6 +18,7 @@ export type Driver = {
     currentRideId?: string | null;
     canReceiveOffers: boolean;
     enabledOptions: string[];
+    tariffs: string[];
     createdAt?: string;
     updatedAt?: string;
 };
@@ -101,7 +102,7 @@ export type Ride = {
     userChatId: number;
 
     // Top-level driver (populated in list endpoint)
-    driverId?: {
+    driver?: {
         _id?: string;
         carModel: string;
         carColor: string;

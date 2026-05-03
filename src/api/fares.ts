@@ -4,6 +4,7 @@ export type FareType = "standard" | "comfort" | "ghost";
 
 export type Fare = {
     _id: string;
+    isMandatory: boolean;
     type: FareType;
     baseFare: number;
     perKm: number;
@@ -21,6 +22,8 @@ export type Fare = {
 
 export type FarePayload = {
     type: FareType;
+    rating: number;
+    isMandatory: boolean;
     baseFare: number;
     perKm: number;
     firstKm: number;

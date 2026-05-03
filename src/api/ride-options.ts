@@ -3,6 +3,7 @@ import { api } from "./client";
 export type RideOption = {
     _id: string;
     title: string;
+    title_for_passenger: string;
     option_id: string;
     instant: boolean;
     charge: number;
@@ -13,6 +14,7 @@ export type RideOption = {
 
 export type RideOptionPayload = {
     title: string;
+    title_for_passenger: string;
     option_id: string;
     instant: boolean;
     charge: number;
