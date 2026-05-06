@@ -11,6 +11,8 @@ import SettingsPage from "../pages/food/settings/SettingsPage";
 import RestaurantOwnersPage from "../pages/users/RestaurantOwnersPage";
 import OnlineDriversMapPage from "../pages/drivers/OnlineDriversMapPage";
 import TaxiSettingsPage from "../pages/taxi/settings/TaxiSettingsPage";
+import QrCodesPage from "../pages/food/qr/QrCodesPage";
+import QrCodeDetailPage from "../pages/food/qr/QrCodeDetailPage";
 
 export function AppRouter() {
     return (
@@ -30,6 +32,8 @@ export function AppRouter() {
                     <Route path="food/restaurants" element={<RestaurantsPage />} />
                     <Route path="food/settings" element={<SettingsPage />} />
                     <Route path="food/owners" element={<RestaurantOwnersPage />} />
+                    <Route path="food/qr-codes" element={<QrCodesPage />} />
+                    <Route path="food/qr-codes/:id" element={<QrCodeDetailPage />} />
                     <Route path="restaurants/:id" element={<RestaurantDetailPage />} />
                 </Route>
             </Route>

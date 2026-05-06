@@ -7,6 +7,7 @@ import type { Restaurant } from "../../types/restaurant";
 import { RestaurantForm, type RestaurantFormValues } from "./RestaurantForm";
 import { buildRestaurantFormData } from "./utils/restaurantPayload";
 import { api } from "../../api/client";
+import { StatsRow } from "../../components/StatsRow";
 import React from "react";
 
 type ListResponse = {
@@ -143,6 +144,8 @@ export default function RestaurantsPage() {
                     </Button>
                 </Space>
             </Space>
+
+            <StatsRow serviceType="DELIVERY" />
 
             <Table<Restaurant> rowKey="_id" loading={loading} dataSource={data} columns={columns} pagination={pagination} />
 

@@ -21,6 +21,7 @@ export default function AdminLayout() {
         if (path.startsWith("/app/food/orders")) return ["food-orders"];
         if (path.startsWith("/app/food/settings")) return ["food-settings"];
         if (path.startsWith("/app/food/owners")) return ["food-owners"];
+        if (path.startsWith("/app/food/qr-codes")) return ["food-qr-codes"];
 
         return [];
     }, [location.pathname]);
@@ -80,6 +81,10 @@ export default function AdminLayout() {
                                 {
                                     key: "food-owners",
                                     label: <Link to="/app/food/owners">Restoran Egalari</Link>,
+                                },
+                                {
+                                    key: "food-qr-codes",
+                                    label: <Link to="/app/food/qr-codes">QR Kodlar</Link>,
                                 },
                                 {
                                     key: "food-settings",
