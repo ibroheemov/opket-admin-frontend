@@ -7,6 +7,7 @@ export type RideOption = {
     option_id: string;
     instant: boolean;
     charge: number;
+    sort_order: number;
     createdAt?: string;
     updatedAt?: string;
     __v?: number;
@@ -18,6 +19,7 @@ export type RideOptionPayload = {
     option_id: string;
     instant: boolean;
     charge: number;
+    sort_order: number;
 };
 
 function normalizeList(data: unknown): RideOption[] {

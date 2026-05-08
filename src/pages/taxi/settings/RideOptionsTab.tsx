@@ -42,17 +42,18 @@ export default function RideOptionsTab() {
     }, []);
 
     const columns: ColumnsType<RideOption> = [
+        { title: "Tartib", dataIndex: "sort_order", width: 90 },
         { title: "Nomi", dataIndex: "title" },
-        { title: "Yo'lovchi uchun nomi", dataIndex: "title_for_passenger" },
+        { title: "Yo’lovchi uchun nomi", dataIndex: "title_for_passenger" },
         { title: "Option ID", dataIndex: "option_id" },
         {
             title: "Darhol",
             dataIndex: "instant",
             width: 100,
-            render: (v: boolean) => (v ? "Ha" : "Yo'q"),
+            render: (v: boolean) => (v ? "Ha" : "Yo’q"),
         },
         {
-            title: "Qo‘shimcha narx",
+            title: "Qo’shimcha narx",
             dataIndex: "charge",
             width: 140,
             render: (v: number) => (v != null ? String(v) : "—"),
@@ -97,6 +98,7 @@ export default function RideOptionsTab() {
             option_id: row.option_id,
             instant: row.instant,
             charge: row.charge,
+            sort_order: row.sort_order ?? 0,
         });
         setOpen(true);
     };
@@ -111,6 +113,7 @@ export default function RideOptionsTab() {
                 option_id: values.option_id.trim(),
                 instant: values.instant,
                 charge: Number(values.charge),
+                sort_order: Number(values.sort_order ?? 0),
             };
             if (editing) {
                 await RideOptionsAPI.update(editing._id, payload);
@@ -190,9 +193,12 @@ export default function RideOptionsTab() {
                     </Form.Item>
                     <Form.Item
                         name="charge"
-                        label="Qo‘shimcha narx"
+                        label="Qo’shimcha narx"
                         rules={[{ required: true, message: "Narxni kiriting" }]}
                     >
+                        <InputNumber min={0} style={{ width: "100%" }} />
+                    </Form.Item>
+                    <Form.Item name="sort_order" label="Tartib raqami" initialValue={0}>
                         <InputNumber min={0} style={{ width: "100%" }} />
                     </Form.Item>
                 </Form>
