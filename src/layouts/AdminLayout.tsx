@@ -1,18 +1,28 @@
-import { Layout, Menu, Button } from "antd";
-import { DashboardOutlined, LogoutOutlined } from "@ant-design/icons";
-import { useMemo } from "react";
+import { Layout, Menu, Button, Badge } from "antd";
+import { DashboardOutlined, LogoutOutlined, FileSearchOutlined } from "@ant-design/icons";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { DriverAPI } from "../api/endpoints";
 
 const { Header, Sider, Content } = Layout;
 
 export default function AdminLayout() {
     const { logout } = useAuth();
     const location = useLocation();
+    const [pendingApprovals, setPendingApprovals] = useState(0);
+
+    useEffect(() => {
+        DriverAPI.list({ documentsApproved: "false", pageSize: 1 })
+            .then((res) => setPendingApprovals(res.meta.total))
+            .catch(() => {});
+    }, []);
+
     const selectedKeys = useMemo(() => {
         const path = location.pathname;
 
         if (path.startsWith("/app/dashboard")) return ["dashboard"];
+        if (path.startsWith("/app/taxi/driver-approvals")) return ["taxi-driver-approvals"];
         if (path.startsWith("/app/taxi/drivers")) return ["taxi-drivers"];
         if (path.startsWith("/app/taxi/map")) return ["taxi-map"];
         if (path.startsWith("/app/taxi/orders")) return ["taxi-orders"];
@@ -50,6 +60,17 @@ export default function AdminLayout() {
                                 {
                                     key: "taxi-drivers",
                                     label: <Link to="/app/taxi/drivers">Haydovchilar</Link>,
+                                },
+                                {
+                                    key: "taxi-driver-approvals",
+                                    icon: <FileSearchOutlined />,
+                                    label: (
+                                        <Link to="/app/taxi/driver-approvals">
+                                            <Badge count={pendingApprovals} size="small" offset={[6, -2]}>
+                                                Hujjat tasdiqlash
+                                            </Badge>
+                                        </Link>
+                                    ),
                                 },
                                 {
                                     key: "taxi-orders",

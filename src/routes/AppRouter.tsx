@@ -5,6 +5,7 @@ import Dashboard from "../pages/dashboard/Dashboard";
 import AdminLayout from "../layouts/AdminLayout";
 import RidesPage from "../pages/rides/RidesPage";
 import DriversPage from "../pages/drivers/DriversPage";
+import DriverApprovalsPage from "../pages/drivers/DriverApprovalsPage";
 import RestaurantsPage from "../pages/restaurants/RestaurantsPage2";
 import RestaurantDetailPage from "../pages/restaurants/RestaurantDetailPage";
 import SettingsPage from "../pages/food/settings/SettingsPage";
@@ -27,6 +28,7 @@ export function AppRouter() {
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="taxi/orders" element={<RidesPage />} />
                     <Route path="taxi/drivers" element={<DriversPage />} />
+                    <Route path="taxi/driver-approvals" element={<DriverApprovalsPage />} />
                     <Route path="taxi/map" element={<OnlineDriversMapPage />} />
                     <Route path="taxi/settings" element={<TaxiSettingsPage />} />
                     <Route path="food/restaurants" element={<RestaurantsPage />} />

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
     Button,
+    Divider,
     Flex,
     Form,
     Input,
@@ -22,6 +23,8 @@ import { Tariffs } from "./Tariffs";
 
 const STATUS_OPTIONS: Driver["status"][] = ["online", "offline"];
 
+type DocStatus = "pending" | "approved" | "rejected";
+
 export default function DriversPage() {
     const [loading, setLoading] = useState(false);
     const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -36,6 +39,10 @@ export default function DriversPage() {
     const [open, setOpen] = useState(false);
     const [editing, setEditing] = useState<Driver | null>(null);
     const [form] = Form.useForm<Partial<Driver>>();
+
+    const [docStatus, setDocStatus] = useState<DocStatus>("pending");
+    const [docComment, setDocComment] = useState("");
+    const [docStatusLoading, setDocStatusLoading] = useState(false);
 
     const [registerOpen, setRegisterOpen] = useState(false);
     const [registerSaving, setRegisterSaving] = useState(false);
@@ -102,6 +109,24 @@ export default function DriversPage() {
                 render: (v: number) => <Typography.Text>{v}</Typography.Text>,
             },
             {
+                title: "Hujjat holati",
+                key: "docStatus",
+                width: 130,
+                render: (_: unknown, d: Driver) => {
+                    if (d.documentsApproved) {
+                        return <Tag color="success">Tasdiqlangan</Tag>;
+                    }
+                    if (d.documentsRejected) {
+                        return (
+                            <Tag color="error" title={d.rejectionComment ?? undefined}>
+                                Rad etilgan
+                            </Tag>
+                        );
+                    }
+                    return <Tag color="warning">Kutilmoqda</Tag>;
+                },
+            },
+            {
                 title: "Takliflar",
                 dataIndex: "canReceiveOffers",
                 width: 110,
@@ -132,6 +157,13 @@ export default function DriversPage() {
                                 enabledOptions: d.enabledOptions,
                                 tariffs: d.tariffs,
                             });
+                            const status: DocStatus = d.documentsApproved
+                                ? "approved"
+                                : d.documentsRejected
+                                ? "rejected"
+                                : "pending";
+                            setDocStatus(status);
+                            setDocComment(d.rejectionComment ?? "");
                             setOpen(true);
                         }}
                     >
@@ -170,6 +202,36 @@ export default function DriversPage() {
             return res;
         } catch (e: any) {
             message.error(e?.response?.data?.message ?? "Yangilash muvaffaqiyatsiz");
+        }
+    };
+
+    const applyDocStatus = async () => {
+        if (!editing) return;
+        setDocStatusLoading(true);
+        try {
+            if (docStatus === "approved") {
+                await DriverAPI.approveDocuments(editing._id);
+            } else if (docStatus === "rejected") {
+                await DriverAPI.rejectDocuments(editing._id, docComment);
+            } else {
+                await DriverAPI.resetDocumentStatus(editing._id);
+            }
+            message.success("Hujjat holati yangilandi");
+            setEditing((prev) =>
+                prev
+                    ? {
+                          ...prev,
+                          documentsApproved: docStatus === "approved",
+                          documentsRejected: docStatus === "rejected",
+                          rejectionComment: docStatus === "rejected" ? docComment : "",
+                      }
+                    : prev
+            );
+            fetchDrivers();
+        } catch (e: any) {
+            message.error(e?.response?.data?.message ?? "Hujjat holati yangilanmadi");
+        } finally {
+            setDocStatusLoading(false);
         }
     };
 
@@ -278,6 +340,8 @@ export default function DriversPage() {
                 onCancel={() => {
                     setOpen(false);
                     setEditing(null);
+                    setDocStatus("pending");
+                    setDocComment("");
                 }}
                 onOk={save}
                 okText="Saqlash"
@@ -346,6 +410,36 @@ export default function DriversPage() {
                         }} />
                     </Form.Item>
                 </Form>
+
+                <Divider style={{ marginTop: 24 }}>
+                    Hujjat holati
+                </Divider>
+                <Flex vertical gap={8}>
+                    <Select<DocStatus>
+                        value={docStatus}
+                        onChange={(v) => setDocStatus(v)}
+                        options={[
+                            { label: "⏳ Kutilmoqda", value: "pending" },
+                            { label: "✅ Tasdiqlangan", value: "approved" },
+                            { label: "❌ Rad etilgan", value: "rejected" },
+                        ]}
+                    />
+                    {docStatus === "rejected" && (
+                        <Input.TextArea
+                            rows={3}
+                            placeholder="Rad etish sababi (ixtiyoriy)"
+                            value={docComment}
+                            onChange={(e) => setDocComment(e.target.value)}
+                        />
+                    )}
+                    <Button
+                        type="primary"
+                        loading={docStatusLoading}
+                        onClick={applyDocStatus}
+                    >
+                        Holatni qo'llash
+                    </Button>
+                </Flex>
             </Modal>
 
             <Modal

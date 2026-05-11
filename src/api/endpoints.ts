@@ -1,5 +1,11 @@
 import { api, publicApi } from "./client";
 
+export type UploadMeta = {
+    url?: string;
+    publicId?: string;
+    status: "NOT_PROVIDED" | "PENDING_UPLOAD" | "UPLOADED" | "UPLOAD_FAILED";
+};
+
 export type Driver = {
     _id: string;
     firstname: string;
@@ -13,7 +19,18 @@ export type Driver = {
     carColor: string;
     vehicle: string;
     status: "online" | "offline";
-    driver_license?: string;
+    // self-registered uploads
+    license_front?: UploadMeta;
+    license_back?: UploadMeta;
+    driver_photo?: UploadMeta;
+    // admin-registered uploads
+    driver_license?: UploadMeta;
+    selfie?: UploadMeta;
+    passport?: UploadMeta;
+    documentsApproved: boolean;
+    documentsRejected?: boolean;
+    rejectionComment?: string;
+    fcmToken?: string;
     location?: { lat: number; lon: number };
     currentRideId?: string | null;
     canReceiveOffers: boolean;
@@ -178,6 +195,18 @@ export const DriverAPI = {
     },
     update: async (id: string, payload: Partial<Driver>) => {
         const { data } = await api.patch<{ success: boolean; driver: Driver }>(`/drivers/${id}`, payload);
+        return data;
+    },
+    approveDocuments: async (id: string) => {
+        const { data } = await api.post<{ success: boolean; driver: Driver }>(`/drivers/${id}/approve-documents`);
+        return data;
+    },
+    rejectDocuments: async (id: string, comment: string) => {
+        const { data } = await api.post<{ success: boolean; driver: Driver }>(`/drivers/${id}/reject-documents`, { comment });
+        return data;
+    },
+    resetDocumentStatus: async (id: string) => {
+        const { data } = await api.post<{ success: boolean; driver: Driver }>(`/drivers/${id}/reset-document-status`);
         return data;
     },
     register: async (payload: RegisterDriverPayload) => {
