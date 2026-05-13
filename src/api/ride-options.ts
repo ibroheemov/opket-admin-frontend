@@ -8,6 +8,8 @@ export type RideOption = {
     instant: boolean;
     charge: number;
     sort_order: number;
+    show_in_passenger_app: boolean;
+    show_in_driver_app: boolean;
     createdAt?: string;
     updatedAt?: string;
     __v?: number;
@@ -20,6 +22,8 @@ export type RideOptionPayload = {
     instant: boolean;
     charge: number;
     sort_order: number;
+    show_in_passenger_app: boolean;
+    show_in_driver_app: boolean;
 };
 
 function normalizeList(data: unknown): RideOption[] {

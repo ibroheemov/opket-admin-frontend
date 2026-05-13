@@ -59,6 +59,18 @@ export default function RideOptionsTab() {
             render: (v: number) => (v != null ? String(v) : "—"),
         },
         {
+            title: "Yo’lovchi ilovasida",
+            dataIndex: "show_in_passenger_app",
+            width: 140,
+            render: (v: boolean) => ((v ?? true) ? "Ha" : "Yo’q"),
+        },
+        {
+            title: "Haydovchi ilovasida",
+            dataIndex: "show_in_driver_app",
+            width: 140,
+            render: (v: boolean) => ((v ?? true) ? "Ha" : "Yo’q"),
+        },
+        {
             title: "",
             width: 200,
             render: (_, row) => (
@@ -99,6 +111,8 @@ export default function RideOptionsTab() {
             instant: row.instant,
             charge: row.charge,
             sort_order: row.sort_order ?? 0,
+            show_in_passenger_app: row.show_in_passenger_app ?? true,
+            show_in_driver_app: row.show_in_driver_app ?? true,
         });
         setOpen(true);
     };
@@ -109,11 +123,13 @@ export default function RideOptionsTab() {
             setSaving(true);
             const payload: RideOptionPayload = {
                 title: values.title.trim(),
-                title_for_passenger: values.title_for_passenger.trim(),
+                title_for_passenger: values.title_for_passenger?.trim() ?? "",
                 option_id: values.option_id.trim(),
                 instant: values.instant,
                 charge: Number(values.charge),
                 sort_order: Number(values.sort_order ?? 0),
+                show_in_passenger_app: values.show_in_passenger_app ?? true,
+                show_in_driver_app: values.show_in_driver_app ?? true,
             };
             if (editing) {
                 await RideOptionsAPI.update(editing._id, payload);
@@ -143,7 +159,7 @@ export default function RideOptionsTab() {
                     onClick={() => {
                         setEditing(null);
                         form.resetFields();
-                        form.setFieldsValue({ instant: true, charge: 0 });
+                        form.setFieldsValue({ instant: true, charge: 0, show_in_passenger_app: true, show_in_driver_app: true });
                         setOpen(true);
                     }}
                 >
@@ -178,7 +194,7 @@ export default function RideOptionsTab() {
                     <Form.Item name="title" label="Nomi" rules={[{ required: true, message: "Nomini kiriting" }]}>
                         <Input placeholder="Masalan: Comfort" />
                     </Form.Item>
-                    <Form.Item name="title_for_passenger" label="Yo'lovchi uchun nomi" rules={[{ required: true, message: "Nomini kiriting" }]}>
+                    <Form.Item name="title_for_passenger" label="Yo'lovchi uchun nomi">
                         <Input placeholder="Masalan: Comfort" />
                     </Form.Item>
                     <Form.Item
@@ -189,6 +205,12 @@ export default function RideOptionsTab() {
                         <Input placeholder="Masalan: comfort" />
                     </Form.Item>
                     <Form.Item name="instant" label="Darhol" valuePropName="checked" initialValue={true}>
+                        <Switch />
+                    </Form.Item>
+                    <Form.Item name="show_in_passenger_app" label="Yo'lovchi ilovasida ko'rsatish" valuePropName="checked" initialValue={true}>
+                        <Switch />
+                    </Form.Item>
+                    <Form.Item name="show_in_driver_app" label="Haydovchi ilovasida ko'rsatish" valuePropName="checked" initialValue={true}>
                         <Switch />
                     </Form.Item>
                     <Form.Item
