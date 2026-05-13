@@ -5,6 +5,12 @@ export type ReferralBonusSettings = {
     passengerReferralBonus: number;
 };
 
+export type ReferralZoneSettings = {
+    lat: number;
+    lng: number;
+    radiusKm: number;
+};
+
 export const ReferralAPI = {
     getSettings: async (): Promise<ReferralBonusSettings> => {
         const [driverRes, passengerRes] = await Promise.all([
@@ -31,5 +37,26 @@ export const ReferralAPI = {
             { amount }
         );
         return { passengerReferralBonus: res.data.passengerReferralBonus };
+    },
+
+    getZone: async (): Promise<ReferralZoneSettings> => {
+        const res = await api.get<ReferralZoneSettings>("/admin/settings/referral-zone");
+        return {
+            lat: Number(res.data.lat) || 0,
+            lng: Number(res.data.lng) || 0,
+            radiusKm: Number(res.data.radiusKm) || 0,
+        };
+    },
+
+    updateZone: async (zone: ReferralZoneSettings): Promise<ReferralZoneSettings> => {
+        const res = await api.put<{ success: boolean } & ReferralZoneSettings>(
+            "/admin/settings/referral-zone",
+            zone
+        );
+        return {
+            lat: Number(res.data.lat) || 0,
+            lng: Number(res.data.lng) || 0,
+            radiusKm: Number(res.data.radiusKm) || 0,
+        };
     },
 };

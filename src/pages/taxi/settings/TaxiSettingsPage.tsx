@@ -4,6 +4,8 @@ import FareSettingsTab from "./FareSettingsTab";
 import DriverSearchSettingsTab from "./DriverSearchSettingsTab";
 import ReferralSettingsTab from "./ReferralSettingsTab";
 import CarOptionsTab from "./CarOptionsTab";
+import DiscountSettingsTab from "./DiscountSettingsTab";
+import CancelReasonsTab from "./CancelReasonsTab";
 
 export default function TaxiSettingsPage() {
     return (
@@ -28,6 +30,16 @@ export default function TaxiSettingsPage() {
                     key: "referral-settings",
                     label: "Referral tizimi",
                     children: <ReferralSettingsTab />,
+                },
+                {
+                    key: "discount-settings",
+                    label: "Chegirmalar",
+                    children: <DiscountSettingsTab />,
+                },
+                {
+                    key: "cancel-reasons",
+                    label: "Bekor qilish sabablari",
+                    children: <CancelReasonsTab />,
                 },
                 {
                     key: "car-options",

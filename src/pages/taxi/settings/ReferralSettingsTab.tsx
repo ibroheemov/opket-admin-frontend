@@ -1,4 +1,4 @@
-import { Button, Card, Form, InputNumber, message, Skeleton, Typography } from "antd";
+import { Button, Card, Form, InputNumber, message, Skeleton, Space, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { ReferralAPI } from "../../../api/referral";
 
@@ -6,6 +6,7 @@ const { Text } = Typography;
 
 type DriverFormValues = { driverReferralBonus: number };
 type PassengerFormValues = { passengerReferralBonus: number };
+type ZoneFormValues = { lat: number; lng: number; radiusKm: number };
 
 const numberFieldProps = {
     min: 0,
@@ -22,16 +23,26 @@ export default function ReferralSettingsTab() {
     const [loading, setLoading] = useState(true);
     const [savingDriver, setSavingDriver] = useState(false);
     const [savingPassenger, setSavingPassenger] = useState(false);
+    const [savingZone, setSavingZone] = useState(false);
 
     const [driverForm] = Form.useForm<DriverFormValues>();
     const [passengerForm] = Form.useForm<PassengerFormValues>();
+    const [zoneForm] = Form.useForm<ZoneFormValues>();
 
     const load = async () => {
         setLoading(true);
         try {
-            const settings = await ReferralAPI.getSettings();
+            const [settings, zone] = await Promise.all([
+                ReferralAPI.getSettings(),
+                ReferralAPI.getZone(),
+            ]);
             driverForm.setFieldsValue({ driverReferralBonus: settings.driverReferralBonus });
             passengerForm.setFieldsValue({ passengerReferralBonus: settings.passengerReferralBonus });
+            zoneForm.setFieldsValue({
+                lat: zone.lat,
+                lng: zone.lng,
+                radiusKm: zone.radiusKm,
+            });
         } catch {
             message.error("Referral sozlamalarini yuklashda xatolik");
         } finally {
@@ -64,6 +75,22 @@ export default function ReferralSettingsTab() {
             message.error("Saqlashda xatolik yuz berdi");
         } finally {
             setSavingPassenger(false);
+        }
+    };
+
+    const onSaveZone = async (values: ZoneFormValues) => {
+        setSavingZone(true);
+        try {
+            await ReferralAPI.updateZone({
+                lat: values.lat,
+                lng: values.lng,
+                radiusKm: values.radiusKm,
+            });
+            message.success("Referral hududi yangilandi");
+        } catch {
+            message.error("Hududni saqlashda xatolik yuz berdi");
+        } finally {
+            setSavingZone(false);
         }
     };
 
@@ -124,6 +151,78 @@ export default function ReferralSettingsTab() {
                         </Form.Item>
                         <Form.Item style={{ marginBottom: 0 }}>
                             <Button type="primary" htmlType="submit" loading={savingPassenger}>
+                                Saqlash
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                )}
+            </Card>
+
+            {/* Referral zone */}
+            <Card title="Referral hududi" style={{ marginBottom: 24 }}>
+                <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
+                    Referral bonus faqat yangi foydalanuvchi (haydovchi yoki yo'lovchi)
+                    joylashuvi quyidagi markazdan ko'rsatilgan radius ichida tasdiqlanganida
+                    beriladi. Joylashuv ilovaga ruxsat berilganda avtomatik yuboriladi.
+                    Radiusni 0 ga qo'ying — bu cheklovni o'chiradi.
+                </Text>
+
+                {loading ? (
+                    <Skeleton active paragraph={{ rows: 3 }} />
+                ) : (
+                    <Form form={zoneForm} layout="vertical" onFinish={onSaveZone}>
+                        <Space.Compact block style={{ display: "flex", gap: 12 }}>
+                            <Form.Item
+                                name="lat"
+                                label="Markaz kengligi (lat)"
+                                rules={[
+                                    { required: true, message: "Iltimos, kenglikni kiriting" },
+                                    { type: "number", min: -90, max: 90, message: "-90 dan 90 gacha" },
+                                ]}
+                                style={{ flex: 1 }}
+                            >
+                                <InputNumber
+                                    step={0.000001}
+                                    precision={6}
+                                    style={{ width: "100%" }}
+                                    placeholder="41.311081"
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                name="lng"
+                                label="Markaz uzunligi (lng)"
+                                rules={[
+                                    { required: true, message: "Iltimos, uzunlikni kiriting" },
+                                    { type: "number", min: -180, max: 180, message: "-180 dan 180 gacha" },
+                                ]}
+                                style={{ flex: 1 }}
+                            >
+                                <InputNumber
+                                    step={0.000001}
+                                    precision={6}
+                                    style={{ width: "100%" }}
+                                    placeholder="69.240562"
+                                />
+                            </Form.Item>
+                        </Space.Compact>
+                        <Form.Item
+                            name="radiusKm"
+                            label="Radius (km)"
+                            rules={[
+                                { required: true, message: "Iltimos, radiusni kiriting" },
+                                { type: "number", min: 0, message: "0 dan kam bo'lmasligi kerak" },
+                            ]}
+                        >
+                            <InputNumber
+                                step={1}
+                                min={0}
+                                style={{ width: "100%" }}
+                                addonAfter="km"
+                                placeholder="Masalan: 25"
+                            />
+                        </Form.Item>
+                        <Form.Item style={{ marginBottom: 0 }}>
+                            <Button type="primary" htmlType="submit" loading={savingZone}>
                                 Saqlash
                             </Button>
                         </Form.Item>
