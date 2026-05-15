@@ -11,6 +11,26 @@ export type ReferralZoneSettings = {
     radiusKm: number;
 };
 
+export type ReferralStatus = "pending_location" | "approved" | "rejected";
+
+export type ReferralRecord = {
+    _id: string;
+    status: ReferralStatus;
+    referredUserType: "driver" | "passenger";
+    bonusAmount: number;
+    referredLocation: { lat: number; lng: number } | null;
+    createdAt: string;
+    verifiedAt?: string;
+    referrer: { _id: string; firstname: string; lastname: string; phone: string } | null;
+    referred: { _id: string; firstname?: string; lastname?: string; phone: string | number } | null;
+};
+
+export type ReferralListResponse = {
+    ok: boolean;
+    records: ReferralRecord[];
+    meta: { page: number; pageSize: number; total: number; totalPages: number };
+};
+
 export const ReferralAPI = {
     getSettings: async (): Promise<ReferralBonusSettings> => {
         const [driverRes, passengerRes] = await Promise.all([
@@ -58,5 +78,22 @@ export const ReferralAPI = {
             lng: Number(res.data.lng) || 0,
             radiusKm: Number(res.data.radiusKm) || 0,
         };
+    },
+
+    listReferrals: async (params: {
+        status?: string;
+        page?: number;
+        pageSize?: number;
+    }): Promise<ReferralListResponse> => {
+        const res = await api.get<ReferralListResponse>("/admin/referrals", { params });
+        return res.data;
+    },
+
+    approveReferral: async (id: string): Promise<void> => {
+        await api.post(`/admin/referrals/${id}/approve`);
+    },
+
+    rejectReferral: async (id: string): Promise<void> => {
+        await api.post(`/admin/referrals/${id}/reject`);
     },
 };

@@ -6,6 +6,7 @@ import ReferralSettingsTab from "./ReferralSettingsTab";
 import CarOptionsTab from "./CarOptionsTab";
 import DiscountSettingsTab from "./DiscountSettingsTab";
 import CancelReasonsTab from "./CancelReasonsTab";
+import CashbackSettingsTab from "./CashbackSettingsTab";
 
 export default function TaxiSettingsPage() {
     return (
@@ -45,6 +46,11 @@ export default function TaxiSettingsPage() {
                     key: "car-options",
                     label: "Avtomobil modellari va ranglari",
                     children: <CarOptionsTab />,
+                },
+                {
+                    key: "cashback-settings",
+                    label: "Keshbek",
+                    children: <CashbackSettingsTab />,
                 },
             ]}
         />

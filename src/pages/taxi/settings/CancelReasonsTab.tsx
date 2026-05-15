@@ -16,9 +16,9 @@ import {
 } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import {
-    CancelReason,
+    type CancelReason,
     CancelReasonsAPI,
-    UpdateCancelReason,
+    type UpdateCancelReason,
 } from "../../../api/cancel-reasons";
 
 const { Text } = Typography;

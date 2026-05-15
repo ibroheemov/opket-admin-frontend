@@ -1,9 +1,10 @@
 import { Layout, Menu, Button, Badge } from "antd";
-import { DashboardOutlined, LogoutOutlined, FileSearchOutlined } from "@ant-design/icons";
+import { DashboardOutlined, LogoutOutlined, FileSearchOutlined, GiftOutlined } from "@ant-design/icons";
 import { useEffect, useMemo, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { DriverAPI } from "../api/endpoints";
+import { ReferralAPI } from "../api/referral";
 
 const { Header, Sider, Content } = Layout;
 
@@ -11,10 +12,14 @@ export default function AdminLayout() {
     const { logout } = useAuth();
     const location = useLocation();
     const [pendingApprovals, setPendingApprovals] = useState(0);
+    const [pendingReferrals, setPendingReferrals] = useState(0);
 
     useEffect(() => {
         DriverAPI.list({ documentsApproved: "false", pageSize: 1 })
             .then((res) => setPendingApprovals(res.meta.total))
+            .catch(() => {});
+        ReferralAPI.listReferrals({ status: "pending_location", pageSize: 1 })
+            .then((res) => setPendingReferrals(res.meta.total))
             .catch(() => {});
     }, []);
 
@@ -26,6 +31,8 @@ export default function AdminLayout() {
         if (path.startsWith("/app/taxi/drivers")) return ["taxi-drivers"];
         if (path.startsWith("/app/taxi/map")) return ["taxi-map"];
         if (path.startsWith("/app/taxi/orders")) return ["taxi-orders"];
+        if (path.startsWith("/app/taxi/referrals")) return ["taxi-referrals"];
+        if (path.startsWith("/app/taxi/passengers")) return ["taxi-passengers"];
         if (path.startsWith("/app/taxi/settings")) return ["taxi-settings"];
         if (path.startsWith("/app/food/restaurants")) return ["food-restaurants"];
         if (path.startsWith("/app/food/orders")) return ["food-orders"];
@@ -79,6 +86,21 @@ export default function AdminLayout() {
                                 {
                                     key: "taxi-map",
                                     label: <Link to="/app/taxi/map">Xarita</Link>,
+                                },
+                                {
+                                    key: "taxi-referrals",
+                                    icon: <GiftOutlined />,
+                                    label: (
+                                        <Link to="/app/taxi/referrals">
+                                            <Badge count={pendingReferrals} size="small" offset={[6, -2]}>
+                                                Referrallar
+                                            </Badge>
+                                        </Link>
+                                    ),
+                                },
+                                {
+                                    key: "taxi-passengers",
+                                    label: <Link to="/app/taxi/passengers">Yo'lovchilar</Link>,
                                 },
                                 {
                                     key: "taxi-settings",

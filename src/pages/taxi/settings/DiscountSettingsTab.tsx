@@ -16,9 +16,9 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import {
     DiscountAPI,
-    DiscountConfig,
-    DiscountTier,
-    DiscountType,
+    type DiscountConfig,
+    type DiscountTier,
+    type DiscountType,
 } from "../../../api/discount";
 
 const { Text } = Typography;

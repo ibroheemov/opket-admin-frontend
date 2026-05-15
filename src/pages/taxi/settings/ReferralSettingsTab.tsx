@@ -239,7 +239,8 @@ export default function ReferralSettingsTab() {
                             {[
                                 "Haydovchi o'zining referral kodini boshqa haydovchiga yuboradi",
                                 "Yangi haydovchi ro'yxatdan o'tishda kodini kiritadi",
-                                "Hujjatlari admin tomonidan tasdiqlanganda referral bonus o'tkaziladi",
+                                "Admin panelda \"Referrallar\" bo'limida so'rov paydo bo'ladi",
+                                "Admin joylashuvni tekshirib tasdiqlaydi — taklif qiluvchi haydovchiga bonus o'tkaziladi",
                             ].map((step, i) => (
                                 <StepRow key={i} index={i + 1} text={step} />
                             ))}
@@ -251,8 +252,8 @@ export default function ReferralSettingsTab() {
                             {[
                                 "Haydovchi QR kod yoki referral kodini yo'lovchiga ko'rsatadi",
                                 "Yo'lovchi QR kodni skaner qiladi yoki ro'yxatdan o'tishda kodni kiritadi",
-                                "Yo'lovchi ilovaga ro'yxatdan o'tganda haydovchiga bonus o'tkaziladi",
-                                "Bonus asosiy balansdan alohida saqlanadi",
+                                "Admin panelda \"Referrallar\" bo'limida so'rov paydo bo'ladi",
+                                "Admin joylashuvni tekshirib tasdiqlaydi — haydovchiga bonus o'tkaziladi",
                             ].map((step, i) => (
                                 <StepRow key={i} index={i + 1} text={step} />
                             ))}
