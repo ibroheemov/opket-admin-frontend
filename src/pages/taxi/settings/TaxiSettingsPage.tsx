@@ -7,6 +7,7 @@ import CarOptionsTab from "./CarOptionsTab";
 import DiscountSettingsTab from "./DiscountSettingsTab";
 import CancelReasonsTab from "./CancelReasonsTab";
 import CashbackSettingsTab from "./CashbackSettingsTab";
+import AppVersionSettingsTab from "./AppVersionSettingsTab";
 
 export default function TaxiSettingsPage() {
     return (
@@ -51,6 +52,11 @@ export default function TaxiSettingsPage() {
                     key: "cashback-settings",
                     label: "Keshbek",
                     children: <CashbackSettingsTab />,
+                },
+                {
+                    key: "app-version-settings",
+                    label: "Ilova versiyalari",
+                    children: <AppVersionSettingsTab />,
                 },
             ]}
         />

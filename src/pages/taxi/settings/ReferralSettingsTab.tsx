@@ -6,7 +6,9 @@ const { Text } = Typography;
 
 type DriverFormValues = { driverReferralBonus: number };
 type PassengerFormValues = { passengerReferralBonus: number };
+type PassengerToPassengerFormValues = { passengerToPassengerReferralBonus: number };
 type ZoneFormValues = { lat: number; lng: number; radiusKm: number };
+type RegistrationBonusFormValues = { driverRegistrationBonus: number };
 
 const numberFieldProps = {
     min: 0,
@@ -23,26 +25,36 @@ export default function ReferralSettingsTab() {
     const [loading, setLoading] = useState(true);
     const [savingDriver, setSavingDriver] = useState(false);
     const [savingPassenger, setSavingPassenger] = useState(false);
+    const [savingPassengerToPassenger, setSavingPassengerToPassenger] = useState(false);
     const [savingZone, setSavingZone] = useState(false);
+    const [savingRegistration, setSavingRegistration] = useState(false);
 
     const [driverForm] = Form.useForm<DriverFormValues>();
     const [passengerForm] = Form.useForm<PassengerFormValues>();
+    const [passengerToPassengerForm] = Form.useForm<PassengerToPassengerFormValues>();
     const [zoneForm] = Form.useForm<ZoneFormValues>();
+    const [registrationBonusForm] = Form.useForm<RegistrationBonusFormValues>();
 
     const load = async () => {
         setLoading(true);
         try {
-            const [settings, zone] = await Promise.all([
+            const [settings, zone, registrationBonus, p2pBonus] = await Promise.all([
                 ReferralAPI.getSettings(),
                 ReferralAPI.getZone(),
+                ReferralAPI.getRegistrationBonus(),
+                ReferralAPI.getPassengerToPassengerBonus(),
             ]);
             driverForm.setFieldsValue({ driverReferralBonus: settings.driverReferralBonus });
             passengerForm.setFieldsValue({ passengerReferralBonus: settings.passengerReferralBonus });
+            passengerToPassengerForm.setFieldsValue({
+                passengerToPassengerReferralBonus: p2pBonus.passengerToPassengerReferralBonus,
+            });
             zoneForm.setFieldsValue({
                 lat: zone.lat,
                 lng: zone.lng,
                 radiusKm: zone.radiusKm,
             });
+            registrationBonusForm.setFieldsValue({ driverRegistrationBonus: registrationBonus.driverRegistrationBonus });
         } catch {
             message.error("Referral sozlamalarini yuklashda xatolik");
         } finally {
@@ -53,6 +65,18 @@ export default function ReferralSettingsTab() {
     useEffect(() => {
         load();
     }, []);
+
+    const onSaveRegistrationBonus = async (values: RegistrationBonusFormValues) => {
+        setSavingRegistration(true);
+        try {
+            await ReferralAPI.updateRegistrationBonus(values.driverRegistrationBonus);
+            message.success("Ro'yxatdan o'tish bonusi yangilandi");
+        } catch {
+            message.error("Saqlashda xatolik yuz berdi");
+        } finally {
+            setSavingRegistration(false);
+        }
+    };
 
     const onSaveDriver = async (values: DriverFormValues) => {
         setSavingDriver(true);
@@ -78,6 +102,18 @@ export default function ReferralSettingsTab() {
         }
     };
 
+    const onSavePassengerToPassenger = async (values: PassengerToPassengerFormValues) => {
+        setSavingPassengerToPassenger(true);
+        try {
+            await ReferralAPI.updatePassengerToPassengerBonus(values.passengerToPassengerReferralBonus);
+            message.success("Yo'lovchi → Yo'lovchi referral bonus miqdori yangilandi");
+        } catch {
+            message.error("Saqlashda xatolik yuz berdi");
+        } finally {
+            setSavingPassengerToPassenger(false);
+        }
+    };
+
     const onSaveZone = async (values: ZoneFormValues) => {
         setSavingZone(true);
         try {
@@ -96,6 +132,37 @@ export default function ReferralSettingsTab() {
 
     return (
         <div style={{ maxWidth: 520 }}>
+            {/* Registration bonus */}
+            <Card title="Yangi haydovchi ro'yxatdan o'tish bonusi" style={{ marginBottom: 24 }}>
+                <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
+                    Yangi haydovchining hujjatlari admin tomonidan tasdiqlanganida
+                    uning asosiy balansiga avtomatik qo'shiladigan bonus miqdori.
+                    0 ga o'rnating — bu bonusni o'chiradi.
+                </Text>
+
+                {loading ? (
+                    <Skeleton active paragraph={{ rows: 2 }} />
+                ) : (
+                    <Form form={registrationBonusForm} layout="vertical" onFinish={onSaveRegistrationBonus}>
+                        <Form.Item
+                            name="driverRegistrationBonus"
+                            label="Ro'yxatdan o'tish bonusi (UZS)"
+                            rules={[
+                                { required: true, message: "Iltimos, miqdorni kiriting" },
+                                { type: "number", min: 0, message: "Miqdor 0 dan kam bo'lmasligi kerak" },
+                            ]}
+                        >
+                            <InputNumber {...numberFieldProps} placeholder="Masalan: 30000" />
+                        </Form.Item>
+                        <Form.Item style={{ marginBottom: 0 }}>
+                            <Button type="primary" htmlType="submit" loading={savingRegistration}>
+                                Saqlash
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                )}
+            </Card>
+
             {/* Driver referral */}
             <Card title="Haydovchi referral tizimi" style={{ marginBottom: 24 }}>
                 <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
@@ -151,6 +218,38 @@ export default function ReferralSettingsTab() {
                         </Form.Item>
                         <Form.Item style={{ marginBottom: 0 }}>
                             <Button type="primary" htmlType="submit" loading={savingPassenger}>
+                                Saqlash
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                )}
+            </Card>
+
+            {/* Passenger → Passenger referral */}
+            <Card title="Yo'lovchi → Yo'lovchi referral tizimi" style={{ marginBottom: 24 }}>
+                <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
+                    Yo'lovchi o'zining referral kodini boshqa yo'lovchiga ulashadi.
+                    Yangi yo'lovchi shu kod orqali ro'yxatdan o'tganda taklif qiluvchi
+                    yo'lovchiga bonus <strong>darhol</strong> uning balansiga qo'shiladi.
+                    0 ga o'rnating — bu bonusni o'chiradi.
+                </Text>
+
+                {loading ? (
+                    <Skeleton active paragraph={{ rows: 2 }} />
+                ) : (
+                    <Form form={passengerToPassengerForm} layout="vertical" onFinish={onSavePassengerToPassenger}>
+                        <Form.Item
+                            name="passengerToPassengerReferralBonus"
+                            label="Yo'lovchi referral bonus miqdori (UZS)"
+                            rules={[
+                                { required: true, message: "Iltimos, miqdorni kiriting" },
+                                { type: "number", min: 0, message: "Miqdor 0 dan kam bo'lmasligi kerak" },
+                            ]}
+                        >
+                            <InputNumber {...numberFieldProps} placeholder="Masalan: 10000" />
+                        </Form.Item>
+                        <Form.Item style={{ marginBottom: 0 }}>
+                            <Button type="primary" htmlType="submit" loading={savingPassengerToPassenger}>
                                 Saqlash
                             </Button>
                         </Form.Item>
@@ -254,6 +353,19 @@ export default function ReferralSettingsTab() {
                                 "Yo'lovchi QR kodni skaner qiladi yoki ro'yxatdan o'tishda kodni kiritadi",
                                 "Admin panelda \"Referrallar\" bo'limida so'rov paydo bo'ladi",
                                 "Admin joylashuvni tekshirib tasdiqlaydi — haydovchiga bonus o'tkaziladi",
+                            ].map((step, i) => (
+                                <StepRow key={i} index={i + 1} text={step} />
+                            ))}
+                        </div>
+                    </div>
+                    <div>
+                        <Text strong>Yo'lovchi → Yo'lovchi:</Text>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+                            {[
+                                "Yo'lovchi profilida o'zining referral kodini ko'radi",
+                                "Kodni do'stiga ulashadi (nusxa olish yoki messenjer orqali)",
+                                "Do'st shu kod bilan ilovaga ro'yxatdan o'tadi",
+                                "Taklif qiluvchi yo'lovchi balansiga bonus darhol qo'shiladi — admin tasdig'isiz",
                             ].map((step, i) => (
                                 <StepRow key={i} index={i + 1} text={step} />
                             ))}

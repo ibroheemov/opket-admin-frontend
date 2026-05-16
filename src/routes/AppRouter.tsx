@@ -16,6 +16,7 @@ import ReferralApprovalsPage from "../pages/taxi/ReferralApprovalsPage";
 import PassengersPage from "../pages/passengers/PassengersPage";
 import QrCodesPage from "../pages/food/qr/QrCodesPage";
 import QrCodeDetailPage from "../pages/food/qr/QrCodeDetailPage";
+import MessagingPage from "../pages/messaging/MessagingPage";
 
 export function AppRouter() {
     return (
@@ -41,6 +42,7 @@ export function AppRouter() {
                     <Route path="food/qr-codes" element={<QrCodesPage />} />
                     <Route path="food/qr-codes/:id" element={<QrCodeDetailPage />} />
                     <Route path="restaurants/:id" element={<RestaurantDetailPage />} />
+                    <Route path="messaging" element={<MessagingPage />} />
                 </Route>
             </Route>
 

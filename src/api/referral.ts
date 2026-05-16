@@ -5,6 +5,14 @@ export type ReferralBonusSettings = {
     passengerReferralBonus: number;
 };
 
+export type PassengerToPassengerReferralBonusSettings = {
+    passengerToPassengerReferralBonus: number;
+};
+
+export type RegistrationBonusSettings = {
+    driverRegistrationBonus: number;
+};
+
 export type ReferralZoneSettings = {
     lat: number;
     lng: number;
@@ -95,5 +103,33 @@ export const ReferralAPI = {
 
     rejectReferral: async (id: string): Promise<void> => {
         await api.post(`/admin/referrals/${id}/reject`);
+    },
+
+    getRegistrationBonus: async (): Promise<RegistrationBonusSettings> => {
+        const res = await api.get<RegistrationBonusSettings>("/admin/settings/registration-bonus");
+        return res.data;
+    },
+
+    updateRegistrationBonus: async (amount: number): Promise<RegistrationBonusSettings> => {
+        const res = await api.put<{ success: boolean; driverRegistrationBonus: number }>(
+            "/admin/settings/registration-bonus",
+            { amount }
+        );
+        return { driverRegistrationBonus: res.data.driverRegistrationBonus };
+    },
+
+    getPassengerToPassengerBonus: async (): Promise<PassengerToPassengerReferralBonusSettings> => {
+        const res = await api.get<PassengerToPassengerReferralBonusSettings>(
+            "/admin/settings/passenger-to-passenger-referral-bonus"
+        );
+        return res.data;
+    },
+
+    updatePassengerToPassengerBonus: async (amount: number): Promise<PassengerToPassengerReferralBonusSettings> => {
+        const res = await api.put<{ success: boolean; passengerToPassengerReferralBonus: number }>(
+            "/admin/settings/passenger-to-passenger-referral-bonus",
+            { amount }
+        );
+        return { passengerToPassengerReferralBonus: res.data.passengerToPassengerReferralBonus };
     },
 };

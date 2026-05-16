@@ -1,5 +1,5 @@
 import { Layout, Menu, Button, Badge } from "antd";
-import { DashboardOutlined, LogoutOutlined, FileSearchOutlined, GiftOutlined } from "@ant-design/icons";
+import { DashboardOutlined, LogoutOutlined, FileSearchOutlined, GiftOutlined, SendOutlined } from "@ant-design/icons";
 import { useEffect, useMemo, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
@@ -39,6 +39,7 @@ export default function AdminLayout() {
         if (path.startsWith("/app/food/settings")) return ["food-settings"];
         if (path.startsWith("/app/food/owners")) return ["food-owners"];
         if (path.startsWith("/app/food/qr-codes")) return ["food-qr-codes"];
+        if (path.startsWith("/app/messaging")) return ["messaging"];
 
         return [];
     }, [location.pathname]);
@@ -107,6 +108,11 @@ export default function AdminLayout() {
                                     label: <Link to="/app/taxi/settings">Sozlamalar</Link>,
                                 },
                             ],
+                        },
+                        {
+                            key: "messaging",
+                            icon: <SendOutlined />,
+                            label: <Link to="/app/messaging">Xabar yuborish</Link>,
                         },
                         {
                             key: "food",

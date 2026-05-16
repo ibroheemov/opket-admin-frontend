@@ -84,6 +84,7 @@ export default function RidesPage() {
     const [type, setType] = useState<Ride["type"] | undefined>(undefined);
     const [rideType, setRideType] = useState<Ride["rideType"] | undefined>(undefined);
     const [q, setQ] = useState("");
+    const [driverQ, setDriverQ] = useState("");
     const [dateRange, setDateRange] = useState<[string, string] | undefined>(undefined);
 
     const [selected, setSelected] = useState<Ride | null>(null);
@@ -163,6 +164,7 @@ export default function RidesPage() {
             if (type) params.type = type;
             if (rideType) params.rideType = rideType;
             if (q.trim()) params.q = q.trim();
+            if (driverQ.trim()) params.driverQ = driverQ.trim();
             if (dateRange) {
                 params.from = dateRange[0];
                 params.to = dateRange[1];
@@ -181,7 +183,7 @@ export default function RidesPage() {
     useEffect(() => {
         fetchRides();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page, pageSize, status, type, rideType, dateRange]);
+    }, [page, pageSize, status, type, rideType, dateRange, driverQ]);
 
     const pagination: TablePaginationConfig = {
         current: page,
@@ -272,6 +274,19 @@ export default function RidesPage() {
                     allowClear
                 />
 
+                <Input.Search
+                    placeholder="Haydovchi (mashina raqami, ismi...)"
+                    style={{ width: 280 }}
+                    value={driverQ}
+                    onChange={(e) => setDriverQ(e.target.value)}
+                    onSearch={() => {
+                        setPage(1);
+                        fetchRides();
+                    }}
+                    allowClear
+                    onClear={() => setDriverQ("")}
+                />
+
                 <Button
                     onClick={() => {
                         setStatus(undefined);
@@ -279,6 +294,7 @@ export default function RidesPage() {
                         setRideType(undefined);
                         setDateRange(undefined);
                         setQ("");
+                        setDriverQ("");
                         setPage(1);
                     }}
                 >

@@ -71,6 +71,13 @@ export default function PassengersPage() {
                 render: (v?: string) => v ?? "—",
             },
             {
+                title: "Bildirishnoma",
+                dataIndex: "notificationEnabled",
+                width: 140,
+                render: (v?: boolean) =>
+                    v ? <Tag color="success">Yoqilgan</Tag> : <Tag color="default">O'chirilgan</Tag>,
+            },
+            {
                 title: "Tasdiqlangan",
                 dataIndex: "verified",
                 width: 130,
