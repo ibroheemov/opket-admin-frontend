@@ -17,6 +17,7 @@ import PassengersPage from "../pages/passengers/PassengersPage";
 import QrCodesPage from "../pages/food/qr/QrCodesPage";
 import QrCodeDetailPage from "../pages/food/qr/QrCodeDetailPage";
 import MessagingPage from "../pages/messaging/MessagingPage";
+import WorkingAreaPage from "../pages/taxi/WorkingAreaPage";
 
 export function AppRouter() {
     return (
@@ -36,6 +37,7 @@ export function AppRouter() {
                     <Route path="taxi/settings" element={<TaxiSettingsPage />} />
                     <Route path="taxi/referrals" element={<ReferralApprovalsPage />} />
                     <Route path="taxi/passengers" element={<PassengersPage />} />
+                    <Route path="taxi/working-areas" element={<WorkingAreaPage />} />
                     <Route path="food/restaurants" element={<RestaurantsPage />} />
                     <Route path="food/settings" element={<SettingsPage />} />
                     <Route path="food/owners" element={<RestaurantOwnersPage />} />

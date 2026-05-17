@@ -33,6 +33,7 @@ export default function AdminLayout() {
         if (path.startsWith("/app/taxi/orders")) return ["taxi-orders"];
         if (path.startsWith("/app/taxi/referrals")) return ["taxi-referrals"];
         if (path.startsWith("/app/taxi/passengers")) return ["taxi-passengers"];
+        if (path.startsWith("/app/taxi/working-areas")) return ["taxi-working-areas"];
         if (path.startsWith("/app/taxi/settings")) return ["taxi-settings"];
         if (path.startsWith("/app/food/restaurants")) return ["food-restaurants"];
         if (path.startsWith("/app/food/orders")) return ["food-orders"];
@@ -102,6 +103,10 @@ export default function AdminLayout() {
                                 {
                                     key: "taxi-passengers",
                                     label: <Link to="/app/taxi/passengers">Yo'lovchilar</Link>,
+                                },
+                                {
+                                    key: "taxi-working-areas",
+                                    label: <Link to="/app/taxi/working-areas">Ish hududlari</Link>,
                                 },
                                 {
                                     key: "taxi-settings",
