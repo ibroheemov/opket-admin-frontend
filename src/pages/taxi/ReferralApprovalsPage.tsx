@@ -53,7 +53,7 @@ export default function ReferralApprovalsPage() {
         setActionLoading(id);
         try {
             await ReferralAPI.approveReferral(id);
-            message.success("Referral tasdiqlandi va bonus o'tkazildi");
+            message.success("Referral tasdiqlandi va bonus haydovchiga o'tkazildi");
             load();
         } catch {
             message.error("Tasdiqlashda xatolik yuz berdi");
@@ -160,6 +160,20 @@ export default function ReferralApprovalsPage() {
             },
         },
         {
+            title: "Tekshiruv",
+            key: "autoVerified",
+            render: (_: any, r: ReferralRecord) => {
+                if (r.status === "pending_location") {
+                    return <Text type="secondary">—</Text>;
+                }
+                return r.autoVerified ? (
+                    <Tag color="geekblue">Avtomatik (radius)</Tag>
+                ) : (
+                    <Tag color="gold">Qo'lda</Tag>
+                );
+            },
+        },
+        {
             title: "Bonus (UZS)",
             dataIndex: "bonusAmount",
             key: "bonusAmount",
@@ -179,43 +193,68 @@ export default function ReferralApprovalsPage() {
         {
             title: "Amallar",
             key: "actions",
-            render: (_: any, r: ReferralRecord) =>
-                r.status === "pending_location" ? (
+            render: (_: any, r: ReferralRecord) => {
+                const approveBtn = (
+                    <Popconfirm
+                        title={
+                            r.status === "rejected"
+                                ? "Avtomatik rad etilgan referralni tasdiqlaysizmi?"
+                                : "Referralni tasdiqlaysizmi?"
+                        }
+                        description="Taklif qiluvchi haydovchiga bonus o'tkaziladi."
+                        onConfirm={() => handleApprove(r._id)}
+                        okText="Ha"
+                        cancelText="Yo'q"
+                    >
+                        <Button
+                            type="primary"
+                            size="small"
+                            icon={<CheckOutlined />}
+                            loading={actionLoading === r._id}
+                        >
+                            Tasdiqlash
+                        </Button>
+                    </Popconfirm>
+                );
+
+                const rejectBtn = (
+                    <Popconfirm
+                        title={
+                            r.status === "approved"
+                                ? "Tasdiqlangan referralni bekor qilasizmi?"
+                                : "Referralni rad etasizmi?"
+                        }
+                        description={
+                            r.bonusCredited
+                                ? "Avval o'tkazilgan bonus haydovchidan qaytarib olinadi."
+                                : undefined
+                        }
+                        onConfirm={() => handleReject(r._id)}
+                        okText="Ha"
+                        cancelText="Yo'q"
+                        okButtonProps={{ danger: true }}
+                    >
+                        <Button
+                            danger
+                            size="small"
+                            icon={<CloseOutlined />}
+                            loading={actionLoading === r._id}
+                        >
+                            {r.status === "approved" ? "Bekor qilish" : "Rad etish"}
+                        </Button>
+                    </Popconfirm>
+                );
+
+                // Verification is automatic; these buttons are manual overrides.
+                if (r.status === "approved") return rejectBtn;
+                if (r.status === "rejected") return approveBtn;
+                return (
                     <Space>
-                        <Popconfirm
-                            title="Referralni tasdiqlaysizmi?"
-                            description="Taklif qiluvchi haydovchiga bonus o'tkaziladi."
-                            onConfirm={() => handleApprove(r._id)}
-                            okText="Ha"
-                            cancelText="Yo'q"
-                        >
-                            <Button
-                                type="primary"
-                                size="small"
-                                icon={<CheckOutlined />}
-                                loading={actionLoading === r._id}
-                            >
-                                Tasdiqlash
-                            </Button>
-                        </Popconfirm>
-                        <Popconfirm
-                            title="Referralni rad etasizmi?"
-                            onConfirm={() => handleReject(r._id)}
-                            okText="Ha"
-                            cancelText="Yo'q"
-                            okButtonProps={{ danger: true }}
-                        >
-                            <Button
-                                danger
-                                size="small"
-                                icon={<CloseOutlined />}
-                                loading={actionLoading === r._id}
-                            >
-                                Rad etish
-                            </Button>
-                        </Popconfirm>
+                        {approveBtn}
+                        {rejectBtn}
                     </Space>
-                ) : null,
+                );
+            },
         },
     ];
 
@@ -229,9 +268,16 @@ export default function ReferralApprovalsPage() {
                     marginBottom: 16,
                 }}
             >
-                <Typography.Title level={4} style={{ margin: 0 }}>
-                    Referral so'rovlari
-                </Typography.Title>
+                <div>
+                    <Typography.Title level={4} style={{ margin: 0 }}>
+                        Referral so'rovlari
+                    </Typography.Title>
+                    <Text type="secondary">
+                        Referrallar joylashuv kelganda referral radiusiga ko'ra
+                        avtomatik tasdiqlanadi yoki rad etiladi. Bu yerdan qo'lda
+                        bekor qilish yoki qayta tasdiqlash mumkin.
+                    </Text>
+                </div>
                 <Select
                     value={statusFilter}
                     onChange={setStatusFilter}

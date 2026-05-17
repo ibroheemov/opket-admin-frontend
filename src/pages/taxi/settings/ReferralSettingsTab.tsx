@@ -260,10 +260,14 @@ export default function ReferralSettingsTab() {
             {/* Referral zone */}
             <Card title="Referral hududi" style={{ marginBottom: 24 }}>
                 <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
-                    Referral bonus faqat yangi foydalanuvchi (haydovchi yoki yo'lovchi)
-                    joylashuvi quyidagi markazdan ko'rsatilgan radius ichida tasdiqlanganida
-                    beriladi. Joylashuv ilovaga ruxsat berilganda avtomatik yuboriladi.
-                    Radiusni 0 ga qo'ying — bu cheklovni o'chiradi.
+                    Yangi foydalanuvchi (haydovchi yoki yo'lovchi) joylashuvi
+                    kelganda u quyidagi markazdan ko'rsatilgan radius ichida bo'lsa
+                    referral <strong>avtomatik tasdiqlanadi</strong> va bonus
+                    o'tkaziladi; radiusdan tashqarida bo'lsa <strong>avtomatik rad
+                    etiladi</strong>. Joylashuv ilovaga ruxsat berilganda avtomatik
+                    yuboriladi. Radiusni 0 ga qo'ying — bu cheklov o'chadi va har
+                    qanday joylashuv avtomatik tasdiqlanadi. Adminning so'nggi
+                    qarori "Referrallar" bo'limida qo'lda o'zgartirilishi mumkin.
                 </Text>
 
                 {loading ? (
@@ -338,8 +342,8 @@ export default function ReferralSettingsTab() {
                             {[
                                 "Haydovchi o'zining referral kodini boshqa haydovchiga yuboradi",
                                 "Yangi haydovchi ro'yxatdan o'tishda kodini kiritadi",
-                                "Admin panelda \"Referrallar\" bo'limida so'rov paydo bo'ladi",
-                                "Admin joylashuvni tekshirib tasdiqlaydi — taklif qiluvchi haydovchiga bonus o'tkaziladi",
+                                "Yangi haydovchi joylashuvi qabul qilinadi va referral radiusiga ko'ra avtomatik tekshiriladi",
+                                "Radius ichida bo'lsa — taklif qiluvchi haydovchiga bonus avtomatik o'tkaziladi; admin \"Referrallar\" bo'limida qo'lda bekor qilishi yoki qayta tasdiqlashi mumkin",
                             ].map((step, i) => (
                                 <StepRow key={i} index={i + 1} text={step} />
                             ))}
@@ -351,8 +355,8 @@ export default function ReferralSettingsTab() {
                             {[
                                 "Haydovchi QR kod yoki referral kodini yo'lovchiga ko'rsatadi",
                                 "Yo'lovchi QR kodni skaner qiladi yoki ro'yxatdan o'tishda kodni kiritadi",
-                                "Admin panelda \"Referrallar\" bo'limida so'rov paydo bo'ladi",
-                                "Admin joylashuvni tekshirib tasdiqlaydi — haydovchiga bonus o'tkaziladi",
+                                "Yo'lovchi joylashuvi qabul qilinadi va referral radiusiga ko'ra avtomatik tekshiriladi",
+                                "Radius ichida bo'lsa — haydovchiga bonus avtomatik o'tkaziladi; admin \"Referrallar\" bo'limida qo'lda bekor qilishi yoki qayta tasdiqlashi mumkin",
                             ].map((step, i) => (
                                 <StepRow key={i} index={i + 1} text={step} />
                             ))}
