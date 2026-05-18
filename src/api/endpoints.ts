@@ -136,6 +136,9 @@ export type Ride = {
     // ✅ add this
     statusHistory?: RideStatusEvent[];
 
+    cancellationReason?: string;
+    cancellationReasonKey?: string;
+
     fare: number;
     fareEstimate?: number;
     distanceKm?: number;

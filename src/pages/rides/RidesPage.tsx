@@ -344,6 +344,15 @@ export default function RidesPage() {
                             </Space>
                         </Flex>
 
+                        {selected.status === "cancelled" && (
+                            <>
+                                <Typography.Text strong>Bekor qilish sababi:</Typography.Text>
+                                <Typography.Text>
+                                    {selected.cancellationReason ?? "Sabab ko'rsatilmagan"}
+                                </Typography.Text>
+                            </>
+                        )}
+
                         <Typography.Text strong>Holat tarixi:</Typography.Text>
 
                         <Table
