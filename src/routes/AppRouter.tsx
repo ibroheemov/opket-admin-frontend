@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "../auth/ProtectedRoute";
 import Login from "../pages/auth/Login";
 import Dashboard from "../pages/dashboard/Dashboard";
+import DownloadPage from "../pages/download/DownloadPage";
 import AdminLayout from "../layouts/AdminLayout";
 import RidesPage from "../pages/rides/RidesPage";
 import DriversPage from "../pages/drivers/DriversPage";
@@ -23,6 +24,8 @@ export function AppRouter() {
     return (
         <Routes>
             {/* Public */}
+            <Route path="/" element={<DownloadPage />} />
+            <Route path="/download" element={<DownloadPage />} />
             <Route path="/login" element={<Login />} />
 
             {/* Protected app */}

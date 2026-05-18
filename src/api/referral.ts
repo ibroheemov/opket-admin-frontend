@@ -26,6 +26,10 @@ export type ReferralRecord = {
     status: ReferralStatus;
     referredUserType: "driver" | "passenger";
     bonusAmount: number;
+    /** true once the referrer driver's bonus has actually been credited */
+    bonusCredited: boolean;
+    /** true if the status was decided automatically by the zone-radius check */
+    autoVerified: boolean;
     referredLocation: { lat: number; lng: number } | null;
     createdAt: string;
     verifiedAt?: string;
