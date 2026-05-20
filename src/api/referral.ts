@@ -13,10 +13,10 @@ export type RegistrationBonusSettings = {
     driverRegistrationBonus: number;
 };
 
+export type LatLng = { lat: number; lng: number };
+
 export type ReferralZoneSettings = {
-    lat: number;
-    lng: number;
-    radiusKm: number;
+    polygon: LatLng[];
 };
 
 export type ReferralStatus = "pending_location" | "approved" | "rejected";
@@ -72,24 +72,16 @@ export const ReferralAPI = {
     },
 
     getZone: async (): Promise<ReferralZoneSettings> => {
-        const res = await api.get<ReferralZoneSettings>("/admin/settings/referral-zone");
-        return {
-            lat: Number(res.data.lat) || 0,
-            lng: Number(res.data.lng) || 0,
-            radiusKm: Number(res.data.radiusKm) || 0,
-        };
+        const res = await api.get<{ polygon: LatLng[] }>("/admin/settings/referral-zone");
+        return { polygon: res.data.polygon ?? [] };
     },
 
     updateZone: async (zone: ReferralZoneSettings): Promise<ReferralZoneSettings> => {
-        const res = await api.put<{ success: boolean } & ReferralZoneSettings>(
+        const res = await api.put<{ success: boolean; polygon: LatLng[] }>(
             "/admin/settings/referral-zone",
             zone
         );
-        return {
-            lat: Number(res.data.lat) || 0,
-            lng: Number(res.data.lng) || 0,
-            radiusKm: Number(res.data.radiusKm) || 0,
-        };
+        return { polygon: res.data.polygon ?? [] };
     },
 
     listReferrals: async (params: {

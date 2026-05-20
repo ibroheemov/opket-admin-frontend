@@ -1,13 +1,26 @@
-import { Button, Card, Form, InputNumber, message, Skeleton, Space, Typography } from "antd";
-import { useEffect, useState } from "react";
-import { ReferralAPI } from "../../../api/referral";
+import { Button, Card, Form, InputNumber, message, Skeleton, Space, Spin, Typography } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { GoogleMap, Polygon, useJsApiLoader } from "@react-google-maps/api";
+import type { Libraries } from "@react-google-maps/api";
+import { ReferralAPI, type LatLng } from "../../../api/referral";
+
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? "";
+const GMAPS_LIBRARIES: Libraries = ["drawing"];
+const DEFAULT_CENTER = { lat: 41.1, lng: 71.15 };
+const POLYGON_OPTIONS = {
+    fillColor: "#f5222d",
+    fillOpacity: 0.15,
+    strokeColor: "#f5222d",
+    strokeWeight: 2,
+    editable: true,
+    draggable: false,
+};
 
 const { Text } = Typography;
 
 type DriverFormValues = { driverReferralBonus: number };
 type PassengerFormValues = { passengerReferralBonus: number };
 type PassengerToPassengerFormValues = { passengerToPassengerReferralBonus: number };
-type ZoneFormValues = { lat: number; lng: number; radiusKm: number };
 type RegistrationBonusFormValues = { driverRegistrationBonus: number };
 
 const numberFieldProps = {
@@ -29,10 +42,19 @@ export default function ReferralSettingsTab() {
     const [savingZone, setSavingZone] = useState(false);
     const [savingRegistration, setSavingRegistration] = useState(false);
 
+    const [polygon, setPolygon] = useState<LatLng[]>([]);
+    const [isDrawing, setIsDrawing] = useState(false);
+    const polygonRef = useRef<google.maps.Polygon | null>(null);
+
+    const { isLoaded: mapsLoaded } = useJsApiLoader({
+        id: "google-map-script",
+        googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+        libraries: GMAPS_LIBRARIES,
+    });
+
     const [driverForm] = Form.useForm<DriverFormValues>();
     const [passengerForm] = Form.useForm<PassengerFormValues>();
     const [passengerToPassengerForm] = Form.useForm<PassengerToPassengerFormValues>();
-    const [zoneForm] = Form.useForm<ZoneFormValues>();
     const [registrationBonusForm] = Form.useForm<RegistrationBonusFormValues>();
 
     const load = async () => {
@@ -49,11 +71,7 @@ export default function ReferralSettingsTab() {
             passengerToPassengerForm.setFieldsValue({
                 passengerToPassengerReferralBonus: p2pBonus.passengerToPassengerReferralBonus,
             });
-            zoneForm.setFieldsValue({
-                lat: zone.lat,
-                lng: zone.lng,
-                radiusKm: zone.radiusKm,
-            });
+            setPolygon(zone.polygon ?? []);
             registrationBonusForm.setFieldsValue({ driverRegistrationBonus: registrationBonus.driverRegistrationBonus });
         } catch {
             message.error("Referral sozlamalarini yuklashda xatolik");
@@ -114,14 +132,25 @@ export default function ReferralSettingsTab() {
         }
     };
 
-    const onSaveZone = async (values: ZoneFormValues) => {
+    const handleMapClick = (e: google.maps.MapMouseEvent) => {
+        if (!isDrawing || !e.latLng) return;
+        setPolygon((prev) => [...prev, { lat: e.latLng!.lat(), lng: e.latLng!.lng() }]);
+    };
+
+    const syncPolygonFromRef = () => {
+        if (!polygonRef.current) return;
+        const path = polygonRef.current.getPath().getArray();
+        setPolygon(path.map((p) => ({ lat: p.lat(), lng: p.lng() })));
+    };
+
+    const onSaveZone = async () => {
+        if (polygon.length > 0 && polygon.length < 3) {
+            message.warning("Polygon kamida 3 ta nuqtadan iborat bo'lishi kerak");
+            return;
+        }
         setSavingZone(true);
         try {
-            await ReferralAPI.updateZone({
-                lat: values.lat,
-                lng: values.lng,
-                radiusKm: values.radiusKm,
-            });
+            await ReferralAPI.updateZone({ polygon });
             message.success("Referral hududi yangilandi");
         } catch {
             message.error("Hududni saqlashda xatolik yuz berdi");
@@ -260,76 +289,87 @@ export default function ReferralSettingsTab() {
             {/* Referral zone */}
             <Card title="Referral hududi" style={{ marginBottom: 24 }}>
                 <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
-                    Yangi foydalanuvchi (haydovchi yoki yo'lovchi) joylashuvi
-                    kelganda u quyidagi markazdan ko'rsatilgan radius ichida bo'lsa
-                    referral <strong>avtomatik tasdiqlanadi</strong> va bonus
-                    o'tkaziladi; radiusdan tashqarida bo'lsa <strong>avtomatik rad
-                    etiladi</strong>. Joylashuv ilovaga ruxsat berilganda avtomatik
-                    yuboriladi. Radiusni 0 ga qo'ying — bu cheklov o'chadi va har
-                    qanday joylashuv avtomatik tasdiqlanadi. Adminning so'nggi
-                    qarori "Referrallar" bo'limida qo'lda o'zgartirilishi mumkin.
+                    Xaritada polygon chizing. Yangi foydalanuvchi joylashuvi shu polygon ichida
+                    bo'lsa referral <strong>avtomatik tasdiqlanadi</strong>, tashqarida bo'lsa
+                    <strong> avtomatik rad etiladi</strong>. Polygon bo'sh bo'lsa cheklov
+                    o'chadi — har qanday joylashuv tasdiqlanadi.
                 </Text>
 
                 {loading ? (
-                    <Skeleton active paragraph={{ rows: 3 }} />
+                    <Skeleton active paragraph={{ rows: 4 }} />
                 ) : (
-                    <Form form={zoneForm} layout="vertical" onFinish={onSaveZone}>
-                        <Space.Compact block style={{ display: "flex", gap: 12 }}>
-                            <Form.Item
-                                name="lat"
-                                label="Markaz kengligi (lat)"
-                                rules={[
-                                    { required: true, message: "Iltimos, kenglikni kiriting" },
-                                    { type: "number", min: -90, max: 90, message: "-90 dan 90 gacha" },
-                                ]}
-                                style={{ flex: 1 }}
+                    <>
+                        <div style={{ marginBottom: 8, display: "flex", gap: 8, alignItems: "center" }}>
+                            <Button
+                                size="small"
+                                type={isDrawing ? "primary" : "default"}
+                                onClick={() => setIsDrawing((v) => !v)}
                             >
-                                <InputNumber
-                                    step={0.000001}
-                                    precision={6}
-                                    style={{ width: "100%" }}
-                                    placeholder="41.311081"
-                                />
-                            </Form.Item>
-                            <Form.Item
-                                name="lng"
-                                label="Markaz uzunligi (lng)"
-                                rules={[
-                                    { required: true, message: "Iltimos, uzunlikni kiriting" },
-                                    { type: "number", min: -180, max: 180, message: "-180 dan 180 gacha" },
-                                ]}
-                                style={{ flex: 1 }}
+                                {isDrawing ? "Chizishni to'xtatish" : "Nuqta qo'shish"}
+                            </Button>
+                            {polygon.length > 0 && (
+                                <Button size="small" danger onClick={() => setPolygon([])}>
+                                    Tozalash
+                                </Button>
+                            )}
+                            <Text type="secondary">{polygon.length} ta nuqta</Text>
+                        </div>
+
+                        {mapsLoaded ? (
+                            <GoogleMap
+                                mapContainerStyle={{ width: "100%", height: 380, borderRadius: 8 }}
+                                center={
+                                    polygon.length > 0
+                                        ? polygon.reduce(
+                                            (acc, p) => ({
+                                                lat: acc.lat + p.lat / polygon.length,
+                                                lng: acc.lng + p.lng / polygon.length,
+                                            }),
+                                            { lat: 0, lng: 0 }
+                                        )
+                                        : DEFAULT_CENTER
+                                }
+                                zoom={10}
+                                onClick={handleMapClick}
+                                options={{ disableDefaultUI: false, clickableIcons: false }}
                             >
-                                <InputNumber
-                                    step={0.000001}
-                                    precision={6}
-                                    style={{ width: "100%" }}
-                                    placeholder="69.240562"
-                                />
-                            </Form.Item>
-                        </Space.Compact>
-                        <Form.Item
-                            name="radiusKm"
-                            label="Radius (km)"
-                            rules={[
-                                { required: true, message: "Iltimos, radiusni kiriting" },
-                                { type: "number", min: 0, message: "0 dan kam bo'lmasligi kerak" },
-                            ]}
-                        >
-                            <InputNumber
-                                step={1}
-                                min={0}
-                                style={{ width: "100%" }}
-                                addonAfter="km"
-                                placeholder="Masalan: 25"
-                            />
-                        </Form.Item>
-                        <Form.Item style={{ marginBottom: 0 }}>
-                            <Button type="primary" htmlType="submit" loading={savingZone}>
+                                {polygon.length >= 2 && (
+                                    <Polygon
+                                        paths={polygon}
+                                        options={POLYGON_OPTIONS}
+                                        onLoad={(p) => { polygonRef.current = p; }}
+                                        onMouseUp={syncPolygonFromRef}
+                                    />
+                                )}
+                            </GoogleMap>
+                        ) : (
+                            <div
+                                style={{
+                                    width: "100%",
+                                    height: 380,
+                                    borderRadius: 8,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    background: "#f5f5f5",
+                                }}
+                            >
+                                <Spin />
+                            </div>
+                        )}
+
+                        {isDrawing && (
+                            <Text type="secondary" style={{ display: "block", marginTop: 8 }}>
+                                Xaritaga bosib polygon nuqtalarini belgilang. Kamida 3 ta nuqta kerak.
+                            </Text>
+                        )}
+
+                        <div style={{ marginTop: 12 }}>
+                            <Button type="primary" loading={savingZone} onClick={onSaveZone}>
                                 Saqlash
                             </Button>
-                        </Form.Item>
-                    </Form>
+                        </div>
+                    </>
                 )}
             </Card>
 
@@ -342,8 +382,8 @@ export default function ReferralSettingsTab() {
                             {[
                                 "Haydovchi o'zining referral kodini boshqa haydovchiga yuboradi",
                                 "Yangi haydovchi ro'yxatdan o'tishda kodini kiritadi",
-                                "Yangi haydovchi joylashuvi qabul qilinadi va referral radiusiga ko'ra avtomatik tekshiriladi",
-                                "Radius ichida bo'lsa — taklif qiluvchi haydovchiga bonus avtomatik o'tkaziladi; admin \"Referrallar\" bo'limida qo'lda bekor qilishi yoki qayta tasdiqlashi mumkin",
+                                "Yangi haydovchi joylashuvi qabul qilinadi va referral polygoniga ko'ra avtomatik tekshiriladi",
+                                "Polygon ichida bo'lsa — taklif qiluvchi haydovchiga bonus avtomatik o'tkaziladi; admin \"Referrallar\" bo'limida qo'lda bekor qilishi yoki qayta tasdiqlashi mumkin",
                             ].map((step, i) => (
                                 <StepRow key={i} index={i + 1} text={step} />
                             ))}
@@ -355,8 +395,8 @@ export default function ReferralSettingsTab() {
                             {[
                                 "Haydovchi QR kod yoki referral kodini yo'lovchiga ko'rsatadi",
                                 "Yo'lovchi QR kodni skaner qiladi yoki ro'yxatdan o'tishda kodni kiritadi",
-                                "Yo'lovchi joylashuvi qabul qilinadi va referral radiusiga ko'ra avtomatik tekshiriladi",
-                                "Radius ichida bo'lsa — haydovchiga bonus avtomatik o'tkaziladi; admin \"Referrallar\" bo'limida qo'lda bekor qilishi yoki qayta tasdiqlashi mumkin",
+                                "Yo'lovchi joylashuvi qabul qilinadi va referral polygoniga ko'ra avtomatik tekshiriladi",
+                                "Polygon ichida bo'lsa — haydovchiga bonus avtomatik o'tkaziladi; admin \"Referrallar\" bo'limida qo'lda bekor qilishi yoki qayta tasdiqlashi mumkin",
                             ].map((step, i) => (
                                 <StepRow key={i} index={i + 1} text={step} />
                             ))}

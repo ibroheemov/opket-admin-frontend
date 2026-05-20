@@ -163,9 +163,9 @@ function DriverApprovalCard({
                 Hujjatlar
             </Typography.Title>
             <Flex gap={24} wrap="wrap">
-                <DocImage label="Guvohnoma (old tomoni)" url={frontUrl} />
-                <DocImage label="Guvohnoma (orqa tomoni)" url={backUrl} />
-                <DocImage label="Haydovchi surati" url={photoUrl} />
+                <DocImage label="Tex passport (old tomoni)" url={frontUrl} />
+                <DocImage label="Tex passport (orqa tomoni)" url={backUrl} />
+                <DocImage label="Haydovchilik guvohnoma rasmi" url={photoUrl} />
             </Flex>
 
             {showReject && (
