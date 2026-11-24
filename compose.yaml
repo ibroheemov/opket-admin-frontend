@@ -1,7 +1,0 @@
-services:
-  web:
-    image: opket-admin-panel:latest
-    container_name: opket-admin-panel
-    ports:
-      - "127.0.0.1:3001:80"
-    restart: unless-stopped

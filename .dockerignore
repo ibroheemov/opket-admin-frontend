@@ -1,8 +1,0 @@
-node_modules
-dist
-dist-ssr
-.git
-.env.development
-*.local
-*.log
-.DS_Store
