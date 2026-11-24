@@ -73,7 +73,7 @@ export type RegisterDriverResponse = {
     refreshToken: string;
 };
 
-export type LoginRequest = { email: string; password: string };
+export type LoginRequest = { phone: string; password: string };
 
 export type LoginResponse = { token: string };
 

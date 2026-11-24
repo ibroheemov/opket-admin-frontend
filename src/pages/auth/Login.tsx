@@ -9,7 +9,7 @@ export default function Login() {
     const { login } = useAuth();
     const [msg, contextHolder] = message.useMessage();
 
-    const onFinish = async (values: { email: string; password: string }) => {
+    const onFinish = async (values: { phone: string; password: string }) => {
         try {
             const res = await AuthAPI.login(values);
             login(res.token);
@@ -29,13 +29,19 @@ export default function Login() {
                     Opket Admin
                 </Typography.Title>
 
+                <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
+                    Demo login: <Typography.Text code>demo</Typography.Text>
+                    <br />
+                    Demo password: <Typography.Text code>12345678</Typography.Text>
+                </Typography.Paragraph>
+
                 <Form layout="vertical" onFinish={onFinish} autoComplete="off">
                     <Form.Item
-                        label="Telefon raqam"
+                        label="Login / Telefon raqam"
                         name="phone"
                         rules={[{ required: true, message: "Telefon raqam majburiy" }]}
                     >
-                        <Input placeholder="991235678" />
+                        <Input placeholder="demo yoki 991235678" />
                     </Form.Item>
 
                     <Form.Item label="Parol" name="password" rules={[{ required: true, message: "Parol majburiy" }]}>
